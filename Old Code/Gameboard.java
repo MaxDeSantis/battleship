@@ -1,102 +1,99 @@
-
-//Refactored as of 3/4/2020 7:06pm by Max DeSantis
-
 package battleship;
 
-import java.awt.Color;
-import java.awt.GridBagConstraints;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-
-import javax.swing.BorderFactory;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
-import java.awt.Insets;
-
-
 
 public class Gameboard {
 
-    JFrame frame;
-    JPanel board;
-    JPanel actions;
-    JPanel playerField;
-    JPanel enemyField;
+    private JFrame frame;
+    private JPanel mainPanel;
+    private JPanel enemyBoard;
+    private JPanel playerBoard;
+    private JPanel playerInputs;
+
+    private JLabel titleLabel;
+    private JLabel enemyBoardLabel;
+    private JLabel playerBoardLabel;
+    private JLabel instructionsTitleLabel;
+    private JLabel instructions;
+
+    private JLabel[][] playerFieldSpaces = new JLabel[11][11];;
+    private JLabel[][] enemyFieldSpaces = new JLabel[11][11];;
+
+    private JButton fireButton;
+    private JTextField targetCell;
+
+    private Insets insets = new Insets(10, 50, 10, 50);
+
+    Shiplog playerShips;
+    Shiplog enemyShips;
 
     public Gameboard() {
+        playerShips = new Shiplog();
+        enemyShips = new Shiplog();
+    }
 
-        
-        //Main window 
+    public void start(Network network) {
+        initPanels();
+
+        initBoards();
+
+        createWindow();
+
+        fireButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+               /*FIXME UNFINISHED BUTTON HERE */
+            }          
+         });
+    }
+
+    private void initPanels() {
+        //create and init main frame
         frame = new JFrame("Battleship");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLocationRelativeTo(null);
 
-        JLabel titleCard = new JLabel("BATTLESHIP");
-        JLabel legend = new JLabel("<html>&lt===> is a ship.<br>Red X is a hit.<br>White O is a miss.<br>Enter cell below to strike.</html>");
-        JLabel messageHistory = new JLabel("You were hit on E8!");
-        JTextField userEntry = new JTextField("Testing");
+        //create and init inner panel
+        mainPanel = new JPanel();
+        mainPanel.setLayout(new GridBagLayout());
+
+        //create and init players actions
+        playerInputs = new JPanel();
+        playerInputs.setLayout(new GridBagLayout());
+        targetCell = new JTextField("", 3);
+        fireButton = new JButton("Fire!");
         
-        Insets insets = new Insets(1, 1, 10, 1);
-        //Overall game board
-        board = new JPanel();
-        board.setLayout(new GridBagLayout());
-
-        //Leftside menu
-        actions = new JPanel();
-        actions.setLayout(new GridBagLayout());
-        GridBagConstraints leftConstraints = new GridBagConstraints();
-        leftConstraints.gridx = 0;
-        leftConstraints.gridy = 0;
-        leftConstraints.weightx = 0.5;
-        leftConstraints.gridheight = 2;
-
-        GridBagConstraints actionsConstraints = new GridBagConstraints();
-        actionsConstraints.gridx = 0;
-        actionsConstraints.gridy = 0;
-        actionsConstraints.insets = insets;
-        actions.add(titleCard, actionsConstraints);
-
-        actionsConstraints.gridx = 0;
-        actionsConstraints.gridy = 1;
-        actions.add(legend, actionsConstraints);
-
-        actionsConstraints.gridx = 0;
-        actionsConstraints.gridy = 2;
-        actions.add(userEntry, actionsConstraints);
-
-        actionsConstraints.gridx = 0;
-        actionsConstraints.gridy = 3;
-        actions.add(messageHistory, actionsConstraints);
+        GridBagConstraints actionConstraints = new GridBagConstraints();
+        actionConstraints.gridx = 0;
+        actionConstraints.gridy = 0;
         
-        board.add(actions, leftConstraints);
-
-        /* NEEDED:
-            field to enter where we want to strike
-            Button to activate strike
-            Label to show miss vs hit
-            Label to show turn count
-            */
-
+        playerInputs.add(targetCell, actionConstraints);
         
+        actionConstraints.gridx = 1;
+        playerInputs.add(fireButton, actionConstraints);
 
-        //Rightside playerField display
-        playerField = new JPanel();
-        playerField.setLayout(new GridLayout(11, 11, 12 ,12));
-        GridBagConstraints playerConstraints = new GridBagConstraints();
-        playerConstraints.gridx = 1;
-        playerConstraints.gridy = 1;
-        playerConstraints.weightx = 0.5;
-        playerField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        //create and init labels
+        titleLabel = new JLabel("BATTLESHIP", SwingConstants.CENTER);
 
-        JLabel[][] playerFieldSpaces = new JLabel[11][11];
+        enemyBoardLabel = new JLabel("ENEMY FIELD", SwingConstants.CENTER);
+        playerBoardLabel = new JLabel("YOUR FIELD", SwingConstants.CENTER);
+        
+        instructionsTitleLabel = new JLabel("YOUR ACTIONS", SwingConstants.CENTER);
+        instructions = new JLabel();
+        instructions.setText("<html>&lt===> is a ship.<br>Red X is a hit.<br>White O is a miss.</html>");
+    }
+
+    private void initBoards() {
+        enemyBoard = new JPanel();
+        enemyBoard.setLayout(new GridLayout(11, 11, 12, 12));
+        playerBoard = new JPanel();
+        playerBoard.setLayout(new GridLayout(11, 11, 12, 12));
+
         char rowLabels = 'A';
         for(int i = 0; i < 11; ++i) {
             for(int j = 0; j < 11; ++j) {
                 playerFieldSpaces[i][j] = new JLabel();
-
                 if(i == 0 && j > 0) {
                     playerFieldSpaces[i][j].setText("" + rowLabels);
                     ++rowLabels;
@@ -107,29 +104,11 @@ public class Gameboard {
                 else {
                     playerFieldSpaces[i][j].setText("-");
                 }
-                playerField.add(playerFieldSpaces[i][j]);
+                
+                playerBoard.add(playerFieldSpaces[i][j]);
             }
         }
 
-        board.add(playerField, playerConstraints);
-        /* 10 tall 12 wide field. Labeled 1 - 10 on left. Labeled A - J on bottom.
-            Use red dot to show a hit.
-            5 ship types:
-            Carrier: 5 holes
-            Battleship: 4 holes
-            Cruiser: 3 holes
-            Submarine: 3 holes
-            Destroyer: 2 holes*/
-
-        enemyField = new JPanel();
-        enemyField.setLayout(new GridLayout(11, 11, 12, 12));
-        GridBagConstraints enemyConstraints = new GridBagConstraints();
-        enemyConstraints.gridx = 1;
-        enemyConstraints.gridy = 0;
-        enemyConstraints.weightx = 0.5;
-        enemyField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-
-        JLabel[][] enemyFieldSpaces = new JLabel[11][11];
         rowLabels = 'A';
         for(int i = 0; i < 11; ++i) {
             for(int j = 0; j < 11; ++j) {
@@ -142,22 +121,75 @@ public class Gameboard {
                     enemyFieldSpaces[i][j].setText("" + i);
                 }
                 else {
-    
                     enemyFieldSpaces[i][j].setText("-");
                 }
                 
-                enemyField.add(enemyFieldSpaces[i][j]);
+                enemyBoard.add(enemyFieldSpaces[i][j]);
             }
         }
 
-
-
-
-        board.add(enemyField, enemyConstraints);
-
-        frame.add(board);
-        frame.pack();
-        frame.setMinimumSize(frame.getSize());
-        frame.setVisible(true);
+        return;
     }
+
+    public void getShipLocations() {
+        titleLabel.setText("thing");
+        return;
+    }
+
+    public void drawShip(int column, int row, boolean horizontal, int shipLength) {
+        if(horizontal) {
+
+            playerFieldSpaces[row][column].setText("<");
+
+            for(int i = 1; i < shipLength; ++i) {
+                playerFieldSpaces[row][column + i].setText("=");
+            }
+            playerFieldSpaces[row][column + shipLength].setText(">");
+        }
+        else {
+
+            playerFieldSpaces[row][column].setText("^");
+
+            for(int i = 1; i < shipLength; ++i) {
+                playerFieldSpaces[row + i][column].setText("||");
+            }
+            playerFieldSpaces[row + shipLength][column].setText("v");
+        }
+
+    }
+
+    private void createWindow() {
+        GridBagConstraints mainPanelConstraints = new GridBagConstraints();
+        mainPanelConstraints.insets = insets;
+        mainPanelConstraints.gridx = 0;
+        mainPanelConstraints.gridy = 0;
+        mainPanel.add(titleLabel, mainPanelConstraints);
+
+        mainPanelConstraints.gridy = 1;
+        mainPanel.add(enemyBoardLabel, mainPanelConstraints);
+
+        mainPanelConstraints.gridy = 2;
+        mainPanel.add(enemyBoard, mainPanelConstraints);
+
+        mainPanelConstraints.gridy = 3;
+        mainPanel.add(playerBoardLabel, mainPanelConstraints);
+
+        mainPanelConstraints.gridy = 4;
+        mainPanel.add(playerBoard, mainPanelConstraints);
+
+        mainPanelConstraints.gridy = 5;
+        mainPanel.add(instructionsTitleLabel, mainPanelConstraints);
+
+        mainPanelConstraints.gridy = 7;
+        mainPanel.add(playerInputs, mainPanelConstraints);
+
+        mainPanelConstraints.gridy = 8;
+        mainPanel.add(instructions, mainPanelConstraints);
+
+        frame.add(mainPanel);
+        frame.pack();
+        frame.setVisible(true);
+        return;
+    }
+
 }

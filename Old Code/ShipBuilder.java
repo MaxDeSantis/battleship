@@ -102,10 +102,9 @@ public class ShipBuilder {
                         currentShip.setText(shipDatabase[dataBaseTracker]);
                         shipLocation.setText("");
                     }
-                    
-                
-            }
+                }   
          });
+         
         frame.setMinimumSize(new Dimension(900, 130));
         frame.add(shipBuilderPanel);
         frame.pack();

@@ -2,95 +2,64 @@ package battleship;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.awt.GridBagLayout;
 
 public class Gameboard {
+    private JPanel boardPanel;
+    private JLabel playerLabel;
+    private JLabel enemyLabel;
 
-    private JFrame frame;
-    private JPanel mainPanel;
     private JPanel enemyBoard;
     private JPanel playerBoard;
-    private JPanel playerInputs;
-
-    private JLabel titleLabel;
-    private JLabel enemyBoardLabel;
-    private JLabel playerBoardLabel;
-    private JLabel instructionsTitleLabel;
-    private JLabel instructions;
 
     private JLabel[][] playerFieldSpaces = new JLabel[11][11];;
     private JLabel[][] enemyFieldSpaces = new JLabel[11][11];;
 
-    private JButton fireButton;
-    private JTextField targetCell;
-
     private Insets insets = new Insets(10, 50, 10, 50);
 
-    Shiplog playerShips;
-    Shiplog enemyShips;
-
     public Gameboard() {
-        playerShips = new Shiplog();
-        enemyShips = new Shiplog();
+        //Setup. labelBoards method creates and fills both gameboards initially.
+        boardPanel = new JPanel();
+        boardPanel.setLayout(new GridBagLayout());
+        labelBoards();
+
+        //Provides proper formatting for components
+        GridBagConstraints boardPanelConstraints = new GridBagConstraints();
+        boardPanelConstraints.insets = insets;
+        boardPanelConstraints.gridx = 0;
+        boardPanelConstraints.gridy = 0;
+        boardPanel.add(enemyLabel, boardPanelConstraints);
+
+        boardPanelConstraints.gridy = 1;
+        boardPanel.add(enemyBoard, boardPanelConstraints);
+
+        boardPanelConstraints.gridy = 2;
+        boardPanel.add(playerLabel, boardPanelConstraints);
+
+        boardPanelConstraints.gridy = 3;
+        boardPanel.add(playerBoard, boardPanelConstraints);
     }
 
-    public void start() {
-        initPanels();
-
-        initBoards();
-
-        createWindow();
-
-        fireButton = new JButton("EXIT TO DESKTOP");
-        fireButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-               /*FIXME UNFINISHED BUTTON HERE */
-            }          
-         });
+    public JPanel getPanel() {
+        return boardPanel;
     }
 
-    private void initPanels() {
-        //create and init main frame
-        frame = new JFrame("Battleship");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    public void createShip() {
 
-        //create and init inner panel
-        mainPanel = new JPanel();
-        mainPanel.setLayout(new GridBagLayout());
-
-        //create and init players actions
-        playerInputs = new JPanel();
-        playerInputs.setLayout(new GridBagLayout());
-        targetCell = new JTextField("", 3);
-        fireButton = new JButton("Fire!");
-        
-        GridBagConstraints actionConstraints = new GridBagConstraints();
-        actionConstraints.gridx = 0;
-        actionConstraints.gridy = 0;
-        
-        playerInputs.add(targetCell, actionConstraints);
-        
-        actionConstraints.gridx = 1;
-        playerInputs.add(fireButton, actionConstraints);
-
-        //create and init labels
-        titleLabel = new JLabel("BATTLESHIP", SwingConstants.CENTER);
-
-        enemyBoardLabel = new JLabel("ENEMY FIELD", SwingConstants.CENTER);
-        playerBoardLabel = new JLabel("YOUR FIELD", SwingConstants.CENTER);
-        
-        instructionsTitleLabel = new JLabel("YOUR ACTIONS", SwingConstants.CENTER);
-        instructions = new JLabel();
-        instructions.setText("<html>&lt===> is a ship.<br>Red X is a hit.<br>White O is a miss.</html>");
     }
 
-    private void initBoards() {
+    private void labelBoards() {
+        
+        enemyLabel = new JLabel("ENEMY FIELD");
         enemyBoard = new JPanel();
         enemyBoard.setLayout(new GridLayout(11, 11, 12, 12));
+        enemyBoard.setBorder(BorderFactory.createLineBorder(Color.black));
+
+        playerLabel = new JLabel("YOUR FIELD");
         playerBoard = new JPanel();
         playerBoard.setLayout(new GridLayout(11, 11, 12, 12));
+        playerBoard.setBorder(BorderFactory.createLineBorder(Color.black));
 
+        //Iterates through two 11 by 12 grids, labeling the rows and columns and placing a '-' character in each blank space
         char rowLabels = 'A';
         for(int i = 0; i < 11; ++i) {
             for(int j = 0; j < 11; ++j) {
@@ -128,69 +97,6 @@ public class Gameboard {
                 enemyBoard.add(enemyFieldSpaces[i][j]);
             }
         }
-
-        return;
-    }
-
-    public void getShipLocations() {
-        titleLabel.setText("thing");
-        return;
-    }
-
-    public void drawShip(int column, int row, boolean horizontal, int shipLength) {
-        if(horizontal) {
-
-            playerFieldSpaces[row][column].setText("<");
-
-            for(int i = 1; i < shipLength; ++i) {
-                playerFieldSpaces[row][column + i].setText("=");
-            }
-            playerFieldSpaces[row][column + shipLength].setText(">");
-        }
-        else {
-
-            playerFieldSpaces[row][column].setText("^");
-
-            for(int i = 1; i < shipLength; ++i) {
-                playerFieldSpaces[row + i][column].setText("||");
-            }
-            playerFieldSpaces[row + shipLength][column].setText("v");
-        }
-
-    }
-
-    private void createWindow() {
-        GridBagConstraints mainPanelConstraints = new GridBagConstraints();
-        mainPanelConstraints.insets = insets;
-        mainPanelConstraints.gridx = 0;
-        mainPanelConstraints.gridy = 0;
-        mainPanel.add(titleLabel, mainPanelConstraints);
-
-        mainPanelConstraints.gridy = 1;
-        mainPanel.add(enemyBoardLabel, mainPanelConstraints);
-
-        mainPanelConstraints.gridy = 2;
-        mainPanel.add(enemyBoard, mainPanelConstraints);
-
-        mainPanelConstraints.gridy = 3;
-        mainPanel.add(playerBoardLabel, mainPanelConstraints);
-
-        mainPanelConstraints.gridy = 4;
-        mainPanel.add(playerBoard, mainPanelConstraints);
-
-        mainPanelConstraints.gridy = 5;
-        mainPanel.add(instructionsTitleLabel, mainPanelConstraints);
-
-        mainPanelConstraints.gridy = 7;
-        mainPanel.add(playerInputs, mainPanelConstraints);
-
-        mainPanelConstraints.gridy = 8;
-        mainPanel.add(instructions, mainPanelConstraints);
-
-        frame.add(mainPanel);
-        frame.pack();
-        frame.setVisible(true);
-        return;
     }
 
 }

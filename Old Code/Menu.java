@@ -3,6 +3,7 @@ package battleship;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 
 
 public class Menu {
@@ -41,7 +42,7 @@ public class Menu {
         playButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if(connection) {
-                    launchGame(board);
+                    launchGame(board, network);
                 }
                 else {
                     infoLabel.setText("ERROR - No connection");
@@ -54,7 +55,15 @@ public class Menu {
         hostButton = new JButton("Host Game");
         hostButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-               network.launchHost();
+                try {
+                    network.launchHost();
+                    infoLabel.setText("Player found");
+                    connection = true;
+                }
+                catch(IOException except) {
+                    createMessage("Unable to host game. Please try again.");
+                }
+               
             }          
         });
         mainPanel.add(hostButton);
@@ -62,7 +71,15 @@ public class Menu {
         findButton = new JButton("Find Game");
         findButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-               network.findHost();
+                try {
+                    network.findHost();
+                    infoLabel.setText("Player found");
+                    connection = true;
+                }
+                catch (IOException except) {
+                    createMessage("Unable to find game. Please try again.");
+                }
+                
             }          
         });
         mainPanel.add(findButton);
@@ -80,9 +97,19 @@ public class Menu {
         return;
     }
 
-    private void launchGame(Gameboard board) {
+    public void createMessage(String message) {
+        JFrame errorFrame = new JFrame("ERROR");
+        JLabel errorLabel = new JLabel(message);
+        errorFrame.add(errorLabel);
+        errorFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        errorFrame.setLocationRelativeTo(null);
+        errorFrame.pack();
+        errorFrame.setVisible(true);
+    }
+
+    private void launchGame(Gameboard board, Network network) {
         frame.setVisible(false);
-        board.start();
+        board.start(network);
         Battleship.createShips(board);
         return;
     }
