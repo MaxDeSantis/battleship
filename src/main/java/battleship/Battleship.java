@@ -11,12 +11,14 @@ public class Battleship {
     public static Gameboard mainBoard;
     public static Console console;
     public static Gamemenu gameMenu;
+    public static Shipbuildmenu buildMenu;
+    public static Network network;
 
     //Managing overall frame
     private static JFrame mainFrame;
     private static Insets insets = new Insets(10, 20, 10, 20);
 
-    public Battleship(Mainmenu menu, Gameboard board, Console console, Gamemenu gameMenu) {
+    public Battleship(Mainmenu menu, Gameboard board, Console console, Gamemenu gameMenu, Shipbuildmenu shipBuilder) {
         mainFrame = new JFrame("Battleship");
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setLocation(200, 200);
@@ -31,6 +33,7 @@ public class Battleship {
         constraints.insets = insets;
         mainFrame.add(menu.getPanel(), constraints);
         mainFrame.add(gameMenu.getPanel(), constraints);
+        mainFrame.add(shipBuilder.getPanel(), constraints);
 
         //Managing layout of the console portion
         constraints.gridx = 0;
@@ -53,7 +56,9 @@ public class Battleship {
         mainBoard = new Gameboard();
         console = new Console();
         gameMenu = new Gamemenu();
+        buildMenu = new Shipbuildmenu();
+        network = new Network();
         
-        battleship = new Battleship(mainMenu, mainBoard, console, gameMenu);
+        battleship = new Battleship(mainMenu, mainBoard, console, gameMenu, buildMenu);
     }
 }

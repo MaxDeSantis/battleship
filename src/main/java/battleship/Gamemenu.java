@@ -11,8 +11,6 @@ public class Gamemenu {
     private JButton fireButton;
     private JTextField targetCell;
 
-    private Insets insets = new Insets(1, 1, 1, 1);
-
     public Gamemenu() {
         gameMenu = new JPanel();
 
