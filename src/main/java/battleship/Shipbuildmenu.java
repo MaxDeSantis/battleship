@@ -15,9 +15,9 @@ public class Shipbuildmenu {
 
     public Shipbuildmenu() {
         buildMenu = new JPanel();
-        buildMenu.setLayout(new GridLayout(0, 1));
-        instructionsLabel = new JLabel("<html>You are placing your ships.</br>(1)Enter the cell of the front of the ship e.g. A3, C5</br>(2)Choose orientation of the ship.</br>(3)Confirm ship placement.</html>");
-        shipFrontLocation = new JTextField("", 3);
+        buildMenu.setLayout(new GridLayout(0, 1, 0, 20));
+        instructionsLabel = new JLabel("<html>You are placing your ships.<br>(1)Enter the cell of the front of the ship e.g. A3, C5<br>(2)Choose orientation of the ship.<br>(3)Confirm ship placement.</html>");
+        shipFrontLocation = new JTextField();
         orientation = new JButton("Horizontal");
         confirm = new JButton("CONFIRM");
 
@@ -39,7 +39,7 @@ public class Shipbuildmenu {
         confirm.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                try {
-                    //FIXME create confirm action.
+                    buildShip();
                }
                catch(Exception except) {
                     Battleship.console.log(except.getMessage() + "Please try again.");
@@ -53,6 +53,19 @@ public class Shipbuildmenu {
         buildMenu.add(orientation);
         buildMenu.add(confirm);
         buildMenu.setVisible(false);
+    }
+
+    //Will verify location to be placed, draw the ship on the board, and update the Shiplog
+    public void buildShip() {
+        try {
+            Battleship.playerShips.verifyPlacement(shipFrontLocation.getText(), orientationValue);
+        }
+        
+        catch(Exception except) {
+            Battleship.console.log(except.getMessage());
+        }
+
+        Battleship.playerShips.addShip(shipFrontLocation.getText(), orientationValue);
     }
 
     public JPanel getPanel() {

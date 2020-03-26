@@ -18,7 +18,7 @@ public class Gamemenu {
 
         fireButton = new JButton("Fire GAME");;
 
-        //Create server when pressed
+        //Checks to see if a ship is in location selected, then notifies of result
         fireButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                //FIXME Give hostbutton functionality

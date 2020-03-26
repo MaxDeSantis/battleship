@@ -1,6 +1,12 @@
 package battleship;
 
-import javax.swing.*;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+import javax.swing.JFrame;
 import java.awt.*;
 
 
@@ -16,11 +22,14 @@ public class Battleship {
 
     //Managing overall frame
     private static JFrame mainFrame;
-    private static Insets insets = new Insets(10, 20, 10, 20);
+    private static Insets insets = new Insets(2, 5, 2, 5);
+
+    //Required game logic
+    public static Shiplog playerShips;
+    public static Shiplog enemyShips;
 
     public Battleship(Mainmenu menu, Gameboard board, Console console, Gamemenu gameMenu, Shipbuildmenu shipBuilder) {
         mainFrame = new JFrame("Battleship");
-        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setLocation(200, 200);
         mainFrame.setLayout(new GridBagLayout());
         
@@ -34,6 +43,7 @@ public class Battleship {
         mainFrame.add(menu.getPanel(), constraints);
         mainFrame.add(gameMenu.getPanel(), constraints);
         mainFrame.add(shipBuilder.getPanel(), constraints);
+        mainFrame.setMinimumSize(new Dimension(700, 800));
 
         //Managing layout of the console portion
         constraints.gridx = 0;
@@ -47,6 +57,13 @@ public class Battleship {
         constraints.gridwidth = 2;
         mainFrame.add(board.getPanel(), constraints);
 
+        //Setting proper procedure for exiting the program
+        mainFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        mainFrame.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                mainMenu.closeGame();
+            }
+        });
         //Showing the window to the user
         mainFrame.pack();
         mainFrame.setVisible(true);
@@ -60,5 +77,17 @@ public class Battleship {
         network = new Network();
         
         battleship = new Battleship(mainMenu, mainBoard, console, gameMenu, buildMenu);
+    }
+
+    public static void shipSelect() {
+        mainMenu.setVisible(false);
+        gameMenu.setVisible(false);
+        buildMenu.setVisible(true);
+    }
+
+    public static void playGame() {
+        mainMenu.setVisible(false);
+        buildMenu.setVisible(false);
+        gameMenu.setVisible(true);
     }
 }

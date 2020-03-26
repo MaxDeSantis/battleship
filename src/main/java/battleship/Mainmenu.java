@@ -16,11 +16,11 @@ public class Mainmenu {
 
     public Mainmenu() {
         menuPanel = new JPanel();
-        menuPanel.setLayout(new GridLayout(0, 1));
+        menuPanel.setLayout(new GridLayout(0, 1, 0, 20));
         
         titleLabel = new JLabel("Battleship!");
-
-        hostButton = new JButton("TEST GAME");
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        hostButton = new JButton("HOST GAME");
         joinButton = new JButton("JOIN GAME");
         exitButton = new JButton("EXIT");
 
@@ -54,7 +54,7 @@ public class Mainmenu {
         //Shutdown program when pressed.
         exitButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-               System.exit(0);
+                closeGame();
             }          
         });
 
@@ -71,6 +71,11 @@ public class Mainmenu {
 
     public void setVisible(Boolean value) {
         menuPanel.setVisible(value);
+    }
+
+    public void closeGame() {
+        Battleship.network.closeGame();
+        System.exit(0);
     }
 
 

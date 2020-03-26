@@ -43,7 +43,7 @@ public class Gameboard {
         return boardPanel;
     }
 
-    public void createShip() {
+    public void drawShip() {
 
     }
 

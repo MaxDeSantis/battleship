@@ -17,7 +17,7 @@ public class Console {
     }
     
     public void log(String message) {
-
+        
     }
 
     public JPanel getPanel() {
