@@ -43,7 +43,30 @@ public class Gameboard {
         return boardPanel;
     }
 
-    public void drawShip() {
+    public void drawShip(String cell, boolean orientation, int length) {
+
+        //Converts cell into row and column formatting using char features
+        int row = cell.charAt(1) -'0';
+        int column = cell.charAt(0) - 'A' + 1;
+
+        //Iterates differently if horizontal vs vertical. Orientation = false means vertical.
+        if(orientation) {
+            //Horizontal ship
+            playerFieldSpaces[row][column].setText("<");
+            for(int i = 1; i < length - 1; ++i) {
+                playerFieldSpaces[row][column + i].setText("=");
+            }
+            playerFieldSpaces[row][column + length - 1].setText(">");
+        }
+        else {
+            //Vertical ship
+            playerFieldSpaces[row][column].setText("^");
+            for(int i = 1; i < length - 1; ++i) {
+                playerFieldSpaces[row + i][column].setText("||");
+            }
+            playerFieldSpaces[row + length - 1][column].setText("v");
+        }
+
 
     }
 

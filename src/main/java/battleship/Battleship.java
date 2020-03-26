@@ -9,6 +9,14 @@ import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 import java.awt.*;
 
+/* 
+IN PROGRESS FUNCTIONALITY:
+Chatting between players
+Fire button
+Marking hits and misses
+"your turn, my turn" counter with timer.
+*/
+
 
 public class Battleship {
     //Main functionality classes
@@ -29,6 +37,7 @@ public class Battleship {
     public static Shiplog enemyShips;
 
     public Battleship(Mainmenu menu, Gameboard board, Console console, Gamemenu gameMenu, Shipbuildmenu shipBuilder) {
+        
         mainFrame = new JFrame("Battleship");
         mainFrame.setLocation(200, 200);
         mainFrame.setLayout(new GridBagLayout());
@@ -40,10 +49,11 @@ public class Battleship {
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.insets = insets;
+        constraints.weighty = 0.5;
+        constraints.weightx = 0.5;
         mainFrame.add(menu.getPanel(), constraints);
         mainFrame.add(gameMenu.getPanel(), constraints);
         mainFrame.add(shipBuilder.getPanel(), constraints);
-        mainFrame.setMinimumSize(new Dimension(700, 800));
 
         //Managing layout of the console portion
         constraints.gridx = 0;
@@ -55,6 +65,8 @@ public class Battleship {
         constraints.gridy = 0;
         constraints.gridheight = 2;
         constraints.gridwidth = 2;
+        constraints.weighty = 1;
+        constraints.weightx = 0.5;
         mainFrame.add(board.getPanel(), constraints);
 
         //Setting proper procedure for exiting the program
@@ -65,6 +77,7 @@ public class Battleship {
             }
         });
         //Showing the window to the user
+        mainFrame.setMinimumSize(new Dimension(700, 800));
         mainFrame.pack();
         mainFrame.setVisible(true);
     }
@@ -75,8 +88,14 @@ public class Battleship {
         gameMenu = new Gamemenu();
         buildMenu = new Shipbuildmenu();
         network = new Network();
+        playerShips = new Shiplog();
+        enemyShips = new Shiplog();
         
         battleship = new Battleship(mainMenu, mainBoard, console, gameMenu, buildMenu);
+
+        while(true) {
+
+        }
     }
 
     public static void shipSelect() {
@@ -88,6 +107,33 @@ public class Battleship {
     public static void playGame() {
         mainMenu.setVisible(false);
         buildMenu.setVisible(false);
+
+        network.sendEnemyShips();
+
+        try {
+            Thread.sleep(1000);
+        }
+        catch(InterruptedException except) {
+            Thread.currentThread().interrupt();
+            console.log("Thread interrupted");
+        }
+
+        network.readEnemyShips();
+
+        /*if(enemyShips.isFull()) {
+            network.sendEnemyShips();
+            console.log("Other player ready.");
+        }
+        else {
+            console.log("Currently waiting on other player");
+            while(!enemyShips.isFull()) {
+                network.readEnemyShips();
+            }
+            console.log("Other player ready.");
+        } */
+
         gameMenu.setVisible(true);
+
+
     }
 }

@@ -15,11 +15,14 @@ public class Mainmenu {
     private JButton exitButton;
 
     public Mainmenu() {
+
+        //Overall GUI
         menuPanel = new JPanel();
         menuPanel.setLayout(new GridLayout(0, 1, 0, 20));
-        
         titleLabel = new JLabel("Battleship!");
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        //Button initialization
         hostButton = new JButton("HOST GAME");
         joinButton = new JButton("JOIN GAME");
         exitButton = new JButton("EXIT");
@@ -30,6 +33,7 @@ public class Mainmenu {
                try {
                     Battleship.console.log("Attempting to join game...");
                     Battleship.network.hostGame();
+                    Battleship.console.log("Game connected!");
                }
                catch(IOException except) {
                     Battleship.console.log("ERROR: Hosting game failed. Please try again.");
@@ -44,6 +48,7 @@ public class Mainmenu {
                try {
                     Battleship.console.log("Attempting to join game...");
                     Battleship.network.joinGame();
+                    Battleship.console.log("Game connected!");
                }
                catch (IOException except) {
                     Battleship.console.log("ERROR: Joining game failed. Please try again.");
