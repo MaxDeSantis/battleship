@@ -2,81 +2,154 @@ package battleship;
 
 import java.net.*;
 import java.io.*;
+import java.lang.String;
 
 public class Network {
-    ServerSocket server;
-    Socket socket;
+    private ServerSocket server;
+    private Socket socket;
 
-    ObjectInputStream inFromOtherPlayer;
-    ObjectOutputStream outToOtherPlayer;
+    private ObjectInputStream inFromOtherPlayer;
+    private ObjectOutputStream outToOtherPlayer;
 
-    OutputStream outstream;
-    InputStream instream;
-    BufferedReader bf;
+    private BufferedReader reader;
+    private PrintWriter printer;
+    private Thread chatting;
+    private Thread dataTransmission;
+
+    private Cell targettedCell;
 
     public Network() {
-
-
     }
 
+    //Creates a server on port 4999. Initiates data streams.
     public void hostGame() throws IOException{
         server = new ServerSocket(4999);
         socket = server.accept();
 
-        outstream = socket.getOutputStream();
-        bf = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        //Setup chatting
+        //Read from them
+        reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        //Send to them
+        printer = new PrintWriter(socket.getOutputStream());
 
         //Changes GUI to start placing ships once connection is established
         Battleship.shipSelect();
+        Battleship.myTurn = true;
+        Battleship.console.log("It is your turn.");
+        chatStart();
+        dataStart();
     }
 
+    //Searches for and joins the server hosted on port 4999. Initiates data streams in the same way as the host.
     public void joinGame() throws IOException{
         socket = new Socket("127.0.0.1", 4999);
 
+        //Setup chatting
+        //Read from them
+        reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        //Send to them
+        printer = new PrintWriter(socket.getOutputStream(), true);
+
         //Changes GUI to start placing ships once connection is established
         Battleship.shipSelect();
+        Battleship.myTurn = false;
+        Battleship.console.log("It is the enemy's turn.");
+        chatStart();
+        dataStart();
     }
 
-    public void sendMesage() {
+    
+
+    //Transmits simple chat string to other player's console.
+    public void sendMessage(String message) {
+        printer.println("ENEMY: " + message);
+        printer.flush();
+    }
+
+    //Reads input stream from other player to display in console.
+    public void readMessages() {
+        try {
+            Battleship.console.log(reader.readLine());
+        }
+        catch(IOException except) {
+            Battleship.console.log("ERROR: Read message failed");
+        }
+    }
+    
+    //Transmits the cell in question to the other player. Waits for response from other player.
+    public void transmitCell(Cell cell) {
+        try {
+            Boolean outcome;
+            outToOtherPlayer.writeObject(cell);
+            outcome = (Boolean) inFromOtherPlayer.readObject();
+            Battleship.mainBoard.updateEnemyField(cell, outcome);
+        }
+        catch(IOException except) {
+
+        }
+        catch(ClassNotFoundException excpet) {
+
+        }
         
     }
 
-    public void readEnemyShips() {
+    //Reads cell transmitted to player from enemy. Determines outcome and sends results.
+    public void readEnemyCellTransmission() {
         try {
-            inFromOtherPlayer = new ObjectInputStream(socket.getInputStream());
-            Battleship.enemyShips = (Shiplog) inFromOtherPlayer.readObject();
+            targettedCell = (Cell) inFromOtherPlayer.readObject();
+            if(Battleship.playerShips.checkLog(targettedCell)) {
+                outToOtherPlayer.writeObject(new Boolean(true));
+                Battleship.mainBoard.updatePlayerField(targettedCell, true);
+            }
+            else {
+                outToOtherPlayer.writeObject(new Boolean(false));
+                Battleship.mainBoard.updatePlayerField(targettedCell, false);
+            }
+        }
+        catch(IOException except) {
+
         }
         catch(ClassNotFoundException except) {
-            Battleship.console.log("ERROR: Transmitting their ships to us failed");
+
         }
-        catch(IOException except) {
-            Battleship.console.log("ERROR: Transmitting their ships to us failed");
-        }
+
     }
 
-    public void sendEnemyShips() {
-        
+    public void dataStart() {
+        dataTransmission = new Thread() {
+            public void run() {
+                while(true) {
+                    readEnemyCellTransmission();
+                }
+            }
+        };
+
         try {
             outToOtherPlayer = new ObjectOutputStream(socket.getOutputStream());
-            outToOtherPlayer.writeObject(Battleship.playerShips);
+            inFromOtherPlayer = new ObjectInputStream(socket.getInputStream());
         }
         catch(IOException except) {
-            Battleship.console.log("ERROR: Transmitting our ships to them failed");
+            Battleship.console.log("ERROR: Failed to initialize transmission streams");
         }
+
+        dataTransmission.start();
     }
 
+    //Starts a thread that will run the communication between players. Required to not bog down the main thread.
+    public void chatStart() {
+        chatting = new Thread() {
+            public void run() {
+                while(true){
+                    readMessages();
+                }
+
+            }
+        };
+
+        chatting.start();
+    }
+    
     public void closeGame(){
-        /*try {
-            if(socket.isBound() || socket.isConnected()) {
-                socket.close();
-            }
-            if(server.isBound()) {
-                server.close();
-            }
-        }
-        catch(IOException except) {
-            Battleship.console.log("ERROR: Unable to close connection.");
-        }*/
         
     }
 }

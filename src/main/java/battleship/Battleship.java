@@ -9,13 +9,8 @@ import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 import java.awt.*;
 
-/* 
-IN PROGRESS FUNCTIONALITY:
-Chatting between players
-Fire button
-Marking hits and misses
-"your turn, my turn" counter with timer.
-*/
+//FIXME Make "cell" class with methods to return row and column.
+//Replace all cell functionality to reduce repetition
 
 
 public class Battleship {
@@ -35,6 +30,8 @@ public class Battleship {
     //Required game logic
     public static Shiplog playerShips;
     public static Shiplog enemyShips;
+    public static boolean gameOver = false;
+    public static boolean myTurn;
 
     public Battleship(Mainmenu menu, Gameboard board, Console console, Gamemenu gameMenu, Shipbuildmenu shipBuilder) {
         
@@ -92,10 +89,6 @@ public class Battleship {
         enemyShips = new Shiplog();
         
         battleship = new Battleship(mainMenu, mainBoard, console, gameMenu, buildMenu);
-
-        while(true) {
-
-        }
     }
 
     public static void shipSelect() {
@@ -108,32 +101,6 @@ public class Battleship {
         mainMenu.setVisible(false);
         buildMenu.setVisible(false);
 
-        network.sendEnemyShips();
-
-        try {
-            Thread.sleep(1000);
-        }
-        catch(InterruptedException except) {
-            Thread.currentThread().interrupt();
-            console.log("Thread interrupted");
-        }
-
-        network.readEnemyShips();
-
-        /*if(enemyShips.isFull()) {
-            network.sendEnemyShips();
-            console.log("Other player ready.");
-        }
-        else {
-            console.log("Currently waiting on other player");
-            while(!enemyShips.isFull()) {
-                network.readEnemyShips();
-            }
-            console.log("Other player ready.");
-        } */
-
         gameMenu.setVisible(true);
-
-
     }
 }

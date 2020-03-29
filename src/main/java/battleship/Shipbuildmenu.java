@@ -39,7 +39,6 @@ public class Shipbuildmenu {
         orientation.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                if(orientationValue) {
-                   
                    orientation.setText("Vertical");
                }
                else {
@@ -59,6 +58,7 @@ public class Shipbuildmenu {
         //Draw newly defined ship when pressed
         confirm.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                
                 buildShip(); 
             }          
         });
@@ -66,14 +66,18 @@ public class Shipbuildmenu {
 
     //Will verify location to be placed, draw the ship on the board, and update the Shiplog
     public void buildShip() {
+
+        Ship ship = new Ship(new Cell(shipFrontLocation.getText()), orientationValue, shipLength[dataTracker]);
+
         try {
-            Battleship.playerShips.verifyPlacement(shipFrontLocation.getText(), orientationValue, shipLength[dataTracker]);
-            Battleship.playerShips.addShip(shipFrontLocation.getText(), orientationValue, shipLength[dataTracker]);
-            Battleship.mainBoard.drawShip(shipFrontLocation.getText(), orientationValue, shipLength[dataTracker]);
+            Battleship.playerShips.verifyPlacement(ship);
+            Battleship.playerShips.addShip(ship);
+            Battleship.mainBoard.drawShip(ship);
+
             dataTracker = dataTracker + 1; //Keeps track of which ship we're on
             shipFrontLocation.setText("");
+
             if(dataTracker > 4) {
-                Battleship.playerShips.setFull();
                 Battleship.playGame();
             }
             else {

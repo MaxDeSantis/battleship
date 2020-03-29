@@ -24,6 +24,7 @@ public class Console {
         consoleTextBox.setRows(10);
         consoleTextBox.setLineWrap(true);
         consoleTextBox.setWrapStyleWord(true);
+        consoleTextBox.setCaretPosition(consoleTextBox.getDocument().getLength());
 
         //User entry line.
         messageBox = new JTextField("");
@@ -33,7 +34,12 @@ public class Console {
         messageBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                log(messageBox.getText());
+                
+                if(messageBox.getText()  != "") {
+                    Battleship.network.sendMessage(messageBox.getText());
+                    log("ME: " + messageBox.getText());
+                    
+                }
             }
         });
 
@@ -56,7 +62,7 @@ public class Console {
     }
     
     public void log(String message) {
-        consoleTextBox.append("-" + message + "\n");
+        consoleTextBox.append(message + "\n");
         messageBox.setText("");
     }
 

@@ -43,14 +43,35 @@ public class Gameboard {
         return boardPanel;
     }
 
-    public void drawShip(String cell, boolean orientation, int length) {
+    public void updatePlayerField(Cell cell, boolean hit) {
+        //Creates new red X JLabel to replace previous.
+        if(hit) {
+            playerFieldSpaces[cell.getRow()][cell.getColActual()].setText("<html><font color = 'red'>X</font></html>");
+        }
+        //creates new white O JLabel to replace previous.
+        else {
+            playerFieldSpaces[cell.getRow()][cell.getColActual()].setText("<html><font color = 'grey'>O</font></html>");
+        }
+    }
+
+    public void updateEnemyField(Cell cell, boolean hit) {
+        if(hit) {
+            enemyFieldSpaces[cell.getRow()][cell.getColActual()].setText("<html><font color = 'red'>X</font></html>");
+        }
+        else {
+            enemyFieldSpaces[cell.getRow()][cell.getColActual()].setText("<html><font color = 'red'>X</font></html>");
+        }
+    }
+
+    public void drawShip(Ship ship) {
 
         //Converts cell into row and column formatting using char features
-        int row = cell.charAt(1) -'0';
-        int column = cell.charAt(0) - 'A' + 1;
+        int row = ship.getRow();
+        int column = ship.getColActual();
+        int length = ship.getLength();
 
         //Iterates differently if horizontal vs vertical. Orientation = false means vertical.
-        if(orientation) {
+        if(ship.getOrientation()) {
             //Horizontal ship
             playerFieldSpaces[row][column].setText("<");
             for(int i = 1; i < length - 1; ++i) {

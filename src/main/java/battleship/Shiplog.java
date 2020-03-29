@@ -2,130 +2,59 @@ package battleship;
 
 public class Shiplog {
 
-    private String[] ships;
+    private Cell[] takenCells;
     private int nextFreeIndex;
-    private boolean isFull = false;
 
     public Shiplog() {
-        ships = new String[17]; // At most, 17 cells can have ships in them
+        takenCells = new Cell[17]; // At most, 17 cells can have ships in them
 
         for(int i = 0; i < 17; ++i) {
-            ships[i] = "";
+            takenCells[i] = new Cell();
         }
         nextFreeIndex = 0;
     }
 
-    public void addShip(String cell, boolean orientation, int length) {
+    //This method adds the ship to the list of taken up cells.
+    public void addShip(Ship ship) {
 
-        String[] shipPosition = new String[length];
-
-        int row = 0;
-        char column = Character.toUpperCase(cell.charAt(0));
-
-        if(cell.length() == 2) {
-            row = cell.charAt(1) - '0';
-        }
-        else if(cell.length() == 3) {
-            row = (cell.charAt(1) - '0') + (cell.charAt(2) - '0');
-        }
-
-        if(orientation) {
-            //Horizontal ship
-            for(int i = 0; i < length; ++i) {
-                shipPosition[i] = "" + column + row;
-                ++column;
-            }
-        }
-        else {
-            //Vertical ship
-            for(int i = 0; i < length; ++i) {
-                shipPosition[i] = "" + column + row;
-                ++row;
-            }
-        }
-
-        for(int i = 0; i < length; ++i) {
-            ships[nextFreeIndex] = shipPosition[i];
+        for(int i = 0; i < ship.getLength(); ++i) {
+            takenCells[nextFreeIndex] = ship.getCell(i);
             ++nextFreeIndex;
         }
-
-
-
     }
 
-    public void verifyPlacement(String cell, boolean orientation, int length) throws Exception{
-        String[] shipPosition = new String[length];
-        int row = 0;
-        char column = 'A';
+    //This method checks to see if the ship actually fits on the board. No hanging off the edge or overlapping with other ships.
+    public void verifyPlacement(Ship ship) throws Exception{
+        int length = ship.getLength();
+        int row = ship.getRow();
+        int column = ship.getColActual();
+        boolean orientation = ship.getOrientation();
 
-        //Converts cell into row and column formatting using char features
-        column = Character.toUpperCase(cell.charAt(0));
-        if(cell.length() == 2) {
-            row = cell.charAt(1) - '0';
+        //Checks if hanging off the edge.
+        if((orientation && (column + length) > 10) || (!orientation && (row + length) > 10)) {
+            throw new Exception("Not enough space in this location.");
         }
-        else if(cell.length() == 3) {
-            row = (cell.charAt(1) - '0') + (cell.charAt(2) - '0');
-        }
-        else {
-            throw new Exception("Invalid cell choice.");
-        }
-
-        if(column >= 'A' || column <= 'J' || row >= 1 || row <= 10) {
-            int colActual = column - 'A' + 1;
-            //Checks if the ship goes over the edges
-            if((orientation && (colActual + length) > 10) || (!orientation && (row + length) > 10)) {
-                throw new Exception("Not enough space in this location.");
-            }
-        }
-    
-        if(orientation) {
-            //Horizontal ship
-            for(int i = 0; i < length; ++i) {
-                shipPosition[i] = "" + column + row;
-                ++column;
-            }
-        }
-        else {
-            //Vertical ship
-            for(int i = 0; i < length; ++i) {
-                shipPosition[i] = "" + column + row;
-                ++row;
-            }
-        }
+        
+        //Checks if overlapping
         for(int i = 0; i < 17; ++i) {
             for(int j = 0; j < length; ++j) {
-                if(ships[i].equals(shipPosition[j])) {
-                    throw new Exception("Cell choice intersects existing ship.");
+                if(takenCells[i].equals(ship.getCell(i))) {
+                    throw new Exception("Ship overlapping other ship.");
                 }
             }
         }
     }
 
     //Checks to see if a ship is at the named cell. If so, alerts of hit and logs it. If not, alerts of miss and logs it.
-    public void checkLog(String cell, boolean orientation) {
+    public boolean checkLog(Cell cell) {
+        boolean value = false;
 
-        //Converts cell into row and column formatting using char features
-        char row = cell.charAt(1);
-        char column = Character.toUpperCase(cell.charAt(0));
-
-        try {
-            for(int i = 0; i < 17; ++i) {
-                if(column == ships[i].charAt(0) && row == ships[i].charAt(1)) {
-                    throw new Exception("Hit at" + cell + "!");
-                }
+        for(int i = 0; i < 17; ++i) {
+            if(cell.getColActual() == takenCells[i].getColActual() && cell.getRow() == takenCells[i].getRow()) {
+                value = true;
             }
-            throw new Exception("Miss at" + cell + ".");
         }
-        catch(Exception except) {
-            Battleship.console.log(except.getMessage());
-        }
-    }
 
-    public void setFull() {
-        isFull = true;
-    }
-
-    public boolean isFull() {
-        return isFull;
+        return value;
     }
 }
