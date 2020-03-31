@@ -7,19 +7,24 @@ public class Ship {
     private int length;
     private Cell[] cells;
 
-    public Ship(Cell shipOrigin, boolean orientation, int length) {
+    public Ship(Cell shipOrigin, boolean orientation, int length) throws Exception{
+        cells = new Cell[length];
         this.shipOrigin = shipOrigin;
         this.orientation = orientation;
         this.length = length;
 
         if(orientation) {
+            Battleship.console.log("Building horizontal ship");
             for(int i = 0; i < length; ++i) {
-                cells[i] = new Cell("" + (shipOrigin.getCol() + 1) + (shipOrigin.getRow()));
+                Battleship.console.log("i = " + i + "row: " + shipOrigin.getRow() + "col: " + (shipOrigin.getColActual() + i));
+                cells[i] = new Cell(shipOrigin.getRow(), shipOrigin.getColActual() + i);
+                Battleship.console.log("Success");
             }
         }
         else {
+            Battleship.console.log("Building vertical ship");
             for(int i = 0; i < length; ++i) {
-                cells[i] = new Cell("" + (shipOrigin.getCol()) + (shipOrigin.getRow() + 1));
+                cells[i] = new Cell(shipOrigin.getRow() + i, shipOrigin.getColActual());
             }
         }
     }

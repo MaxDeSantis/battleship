@@ -30,6 +30,8 @@ public class Shiplog {
         int column = ship.getColActual();
         boolean orientation = ship.getOrientation();
 
+        Battleship.console.log("Initialized. Beginning verification.");
+
         //Checks if hanging off the edge.
         if((orientation && (column + length) > 10) || (!orientation && (row + length) > 10)) {
             throw new Exception("Not enough space in this location.");
@@ -38,7 +40,8 @@ public class Shiplog {
         //Checks if overlapping
         for(int i = 0; i < 17; ++i) {
             for(int j = 0; j < length; ++j) {
-                if(takenCells[i].equals(ship.getCell(i))) {
+                Battleship.console.log("Checking cells i: " + i + " j: " + j);
+                if(takenCells[i].equals(ship.getCell(j))) {
                     throw new Exception("Ship overlapping other ship.");
                 }
             }

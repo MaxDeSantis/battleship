@@ -10,6 +10,7 @@ public class Console {
     private JTextArea consoleTextBox;
     private JScrollPane console;
     private JTextField messageBox;
+    private JScrollBar verticalBar;
 
     public Console() {
 
@@ -24,7 +25,6 @@ public class Console {
         consoleTextBox.setRows(10);
         consoleTextBox.setLineWrap(true);
         consoleTextBox.setWrapStyleWord(true);
-        consoleTextBox.setCaretPosition(consoleTextBox.getDocument().getLength());
 
         //User entry line.
         messageBox = new JTextField("");
@@ -49,6 +49,8 @@ public class Console {
         GridBagConstraints constraints = new GridBagConstraints();
         //Provides scrolling for history
         console = new JScrollPane(consoleTextBox);
+        verticalBar = console.getVerticalScrollBar();
+        
 
         //Text history formatting
         constraints.weightx = 0.5;
@@ -64,6 +66,7 @@ public class Console {
     public void log(String message) {
         consoleTextBox.append(message + "\n");
         messageBox.setText("");
+        verticalBar.setValue(verticalBar.getMaximum());
     }
 
     public JPanel getPanel() {

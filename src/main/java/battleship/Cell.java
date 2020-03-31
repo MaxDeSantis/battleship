@@ -1,7 +1,8 @@
 package battleship;
 
-public class Cell {
+public class Cell implements java.io.Serializable{
 
+    private static final long serialVersionUID = 1L; //Version id for Serializable. Should change when making incompatible changes.
     private int row;
     private char col;
     private int colActual;
@@ -12,24 +13,34 @@ public class Cell {
         colActual = 0;
     }
 
-    public Cell(String cell){
-        try {
-            col = Character.toUpperCase(cell.charAt(0));
+    public Cell(int row, int colActual) {
+        this.row = row;
+        this.colActual = colActual;
+        System.out.println("Converting colActual to col");
+        this.col = (char) (colActual + 'A' - 1);
+        System.out.println("Successfully converted " + colActual + " to " + col);
+    }
 
+    public Cell(String cell) throws Exception{
+            col = Character.toUpperCase(cell.charAt(0));
+            Battleship.console.log("Col: " + col);
             colActual = col - 'A' + 1;
+            Battleship.console.log("ColActual: " + colActual);
     
             row = Integer.parseInt(cell.substring(1));
+            Battleship.console.log("Row: " + row);
 
-            if(col < 'A' || col > 'J') {
+            if(col >= 'A' && col <= 'J') {
+            }
+            else {
                 throw new Exception("Invalid column.");
             }
-            if(row > 10 || row < 1) {
+            if(row <= 10 && row >= 1) {
+                
+            }
+            else {
                 throw new Exception("Invalid row.");
             }
-        }
-        catch(Exception except) {
-            Battleship.console.log(except.getMessage());
-        }
     }
 
     public int getRow() {

@@ -50,7 +50,7 @@ public class Gameboard {
         }
         //creates new white O JLabel to replace previous.
         else {
-            playerFieldSpaces[cell.getRow()][cell.getColActual()].setText("<html><font color = 'grey'>O</font></html>");
+            playerFieldSpaces[cell.getRow()][cell.getColActual()].setText("<html><font color = 'white'>O</font></html>");
         }
     }
 
@@ -59,7 +59,7 @@ public class Gameboard {
             enemyFieldSpaces[cell.getRow()][cell.getColActual()].setText("<html><font color = 'red'>X</font></html>");
         }
         else {
-            enemyFieldSpaces[cell.getRow()][cell.getColActual()].setText("<html><font color = 'red'>X</font></html>");
+            enemyFieldSpaces[cell.getRow()][cell.getColActual()].setText("<html><font color = 'white'>O</font></html>");
         }
     }
 

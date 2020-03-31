@@ -58,7 +58,6 @@ public class Shipbuildmenu {
         //Draw newly defined ship when pressed
         confirm.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                
                 buildShip(); 
             }          
         });
@@ -67,12 +66,16 @@ public class Shipbuildmenu {
     //Will verify location to be placed, draw the ship on the board, and update the Shiplog
     public void buildShip() {
 
-        Ship ship = new Ship(new Cell(shipFrontLocation.getText()), orientationValue, shipLength[dataTracker]);
-
         try {
+            Battleship.console.log("Building ship");
+            Ship ship = new Ship(new Cell(shipFrontLocation.getText()), orientationValue, shipLength[dataTracker]);
+            Battleship.console.log("Ship built");
             Battleship.playerShips.verifyPlacement(ship);
+            Battleship.console.log("Ship verified");
             Battleship.playerShips.addShip(ship);
+            Battleship.console.log("Ship added");
             Battleship.mainBoard.drawShip(ship);
+            Battleship.console.log("Ship drawn");
 
             dataTracker = dataTracker + 1; //Keeps track of which ship we're on
             shipFrontLocation.setText("");

@@ -9,8 +9,12 @@ import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 import java.awt.*;
 
-//FIXME Make "cell" class with methods to return row and column.
-//Replace all cell functionality to reduce repetition
+//Current Bugs:
+/*
+1) Weird looping
+2) Not verifying when other client is ready
+3) Error when transmitting cell
+*/
 
 
 public class Battleship {
@@ -100,6 +104,18 @@ public class Battleship {
     public static void playGame() {
         mainMenu.setVisible(false);
         buildMenu.setVisible(false);
+        
+        //network.sendData("READY");
+
+        /*if(network.ready) {
+            console.log("Beginning game");
+        }
+        else {
+            console.log("Waiting on other player...");
+            while(!network.ready) {
+            }
+            console.log("Beginning game");
+        } */
 
         gameMenu.setVisible(true);
     }
