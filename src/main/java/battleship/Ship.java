@@ -14,15 +14,11 @@ public class Ship {
         this.length = length;
 
         if(orientation) {
-            Battleship.console.log("Building horizontal ship");
             for(int i = 0; i < length; ++i) {
-                Battleship.console.log("i = " + i + "row: " + shipOrigin.getRow() + "col: " + (shipOrigin.getColActual() + i));
                 cells[i] = new Cell(shipOrigin.getRow(), shipOrigin.getColActual() + i);
-                Battleship.console.log("Success");
             }
         }
         else {
-            Battleship.console.log("Building vertical ship");
             for(int i = 0; i < length; ++i) {
                 cells[i] = new Cell(shipOrigin.getRow() + i, shipOrigin.getColActual());
             }

@@ -104,18 +104,6 @@ public class Battleship {
     public static void playGame() {
         mainMenu.setVisible(false);
         buildMenu.setVisible(false);
-        
-        //network.sendData("READY");
-
-        /*if(network.ready) {
-            console.log("Beginning game");
-        }
-        else {
-            console.log("Waiting on other player...");
-            while(!network.ready) {
-            }
-            console.log("Beginning game");
-        } */
 
         gameMenu.setVisible(true);
     }

@@ -19,15 +19,14 @@ public class Network {
     private BufferedReader reader;
     private PrintWriter printer;
     private Thread chatting;
-    private Thread dataTransmission;
     private Thread cellTransmission;
 
     private Object inputData;
     private boolean host;
     private boolean connection;
     public boolean ready = false;
-    private boolean waiting = false;
     private Cell transmitCell;
+    private Cell outcomeCell;
     
 
     public Network() {
@@ -58,12 +57,12 @@ public class Network {
         //Changes GUI to start placing ships once connection is established
         Battleship.shipSelect();
         Battleship.myTurn = true;
+        Battleship.gameMenu.updateTurnLabel();
         Battleship.console.log("It is your turn.");
         host = true;
         connection = true;
         chatStart();
         cellTransmissionStart();
-        //dataStart();
     }
 
     //Searches for and joins the server hosted on port 4999. Initiates data streams in the same way as the host.
@@ -86,10 +85,10 @@ public class Network {
         Battleship.shipSelect();
         Battleship.myTurn = false;
         Battleship.console.log("It is the enemy's turn.");
+        Battleship.gameMenu.updateTurnLabel();
         host = false;
         connection = true;
         chatStart();
-        //dataStart();
         cellTransmissionStart();
     }
 
@@ -117,7 +116,9 @@ public class Network {
         try {
             outToOtherPlayer.writeObject(cell);
             System.out.println("Cell written to other player");
-            Battleship.myTurn = !Battleship.myTurn;
+            outcomeCell = cell;
+            Battleship.myTurn = false;
+            Battleship.gameMenu.updateTurnLabel();
         }
         catch(IOException except) {
             System.out.println("IOException in transmitCell");
@@ -130,45 +131,45 @@ public class Network {
         try {
             inputData = inFromOtherPlayer.readObject();
 
-            if(inputData instanceof Boolean && waiting) {
-                Boolean outcome;
-                outcome = (Boolean) inputData;
-                Battleship.console.log("Outcome read: " + outcome.booleanValue());
-                Battleship.mainBoard.updateEnemyField(transmitCell, outcome.booleanValue());
-                System.out.println("Board updated");
-                waiting = false;
-            }
-            else if(inputData instanceof Cell) {
+            if(inputData instanceof Cell) {
                 transmitCell = (Cell) inputData;
 
                 if(Battleship.playerShips.checkLog(transmitCell)) {
-                    Battleship.console.log("Cell hit");
+                    Battleship.console.log("Hit on " + transmitCell.getValue());
+
                     Battleship.mainBoard.updatePlayerField(transmitCell, true);
-                    outToOtherPlayer.writeObject(new Boolean(true));
-                    waiting = true;
-                    Battleship.myTurn = !Battleship.myTurn;
+                    outToOtherPlayer.writeObject(new String("HIT"));
+                    
                 }
                 else {
-                    Battleship.console.log("Cell not hit");
-                    outToOtherPlayer.writeObject(new Boolean(false));
+                    Battleship.console.log("Miss on " + transmitCell.getValue());
+                    outToOtherPlayer.writeObject(new String("MISS"));
                     Battleship.mainBoard.updatePlayerField(transmitCell, false);
+
                 }
+                outcomeCell = transmitCell;
+                Battleship.myTurn = true;
+                Battleship.gameMenu.updateTurnLabel();
             }
             
             else if(inputData instanceof String) {
                 String information = (String) inputData;
-                Battleship.console.log(information);
-            }
-            /*if(Battleship.playerShips.checkLog(targettedCell)) {
-                System.out.println("Cell hit");
-                outToOtherPlayer.writeObject(new Boolean(true));
-                Battleship.mainBoard.updatePlayerField(targettedCell, true);
+                if(information.equals("HIT")) {
+                    //Battleship.console.log("You scored a hit on" + outcomeCell.getValue());
+                    Battleship.mainBoard.updateEnemyField(outcomeCell, true);
+                }
+                else if(information.equals("MISS")) {
+                    //Battleship.console.log("You missed on" + outcomeCell.getValue());
+                    Battleship.mainBoard.updateEnemyField(outcomeCell, false);
+                }
+                else {
+                    Battleship.console.log("String not hit or miss");
+                    Battleship.console.log(information);
+                }
             }
             else {
-                System.out.println("Cell not hit");
-                outToOtherPlayer.writeObject(new Boolean(false));
-                Battleship.mainBoard.updatePlayerField(targettedCell, false);
-            } */
+                Battleship.console.log("No instanceof");
+            }
         }
         catch(IOException except) {
             System.out.println("IOException in readEnemyCellTransmission");
@@ -183,35 +184,6 @@ public class Network {
 
     } 
 
-    /*public void sendData(String value) {
-        try {
-            outToOtherPlayer.writeObject(value);
-        }
-        catch(IOException except) {
-
-        }
-    } */
-
-    /*public void receiveData() {
-        String value;
-        try {
-            value = (String) inFromOtherPlayer.readObject();
-
-            if(value.equals("EXIT")) {
-                playerExited();
-            }
-            else if(value.equals("READY")) {
-                ready = true;
-            }
-        }
-        catch(IOException except) {
-
-        }
-        catch(ClassNotFoundException except) {
-
-        }
-    } */
-
     public void cellTransmissionStart() {
         cellTransmission = new Thread() {
             public void run() {
@@ -223,21 +195,8 @@ public class Network {
         };
 
         cellTransmission.start();
+        cellTransmission.setName("Cell Transmission Thread");
     }
-
-    /*public void dataStart() {
-        
-        dataTransmission = new Thread() {
-            public void run() {
-                System.out.println("Data transmission started");
-                while(true) {
-                    receiveData();
-                }
-            }
-        };
-
-        dataTransmission.start();
-    } */
 
     //Starts a thread that will run the communication between players. Required to not bog down the main thread.
     public void chatStart() {
@@ -253,10 +212,10 @@ public class Network {
         };
 
         chatting.start();
+        chatting.setName("Chatting thread");
     }
 
     public void playerExited() {
-            dataTransmission.interrupt();
             chatting.interrupt();
             cellTransmission.interrupt();
             try {
@@ -274,8 +233,6 @@ public class Network {
     
     public void closeGame(){
         if(connection) {
-            //sendData("EXIT");
-            //dataTransmission.interrupt();
             chatting.interrupt();
             cellTransmission.interrupt();
             try {

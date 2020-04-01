@@ -30,7 +30,6 @@ public class Gamemenu {
                    try {
                         Cell choice = new Cell(targetCell.getText());
                         Battleship.network.transmitCell(choice);
-                        Battleship.myTurn = !Battleship.myTurn;
                         updateTurnLabel();
                    }
                    catch(Exception except) {
@@ -50,7 +49,7 @@ public class Gamemenu {
         gameMenu.setVisible(false);
     }
 
-    private void updateTurnLabel() {
+    public void updateTurnLabel() {
         if(Battleship.myTurn) {
             titleLabel.setText("It is your turn");
         }

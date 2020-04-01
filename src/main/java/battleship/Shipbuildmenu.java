@@ -67,15 +67,10 @@ public class Shipbuildmenu {
     public void buildShip() {
 
         try {
-            Battleship.console.log("Building ship");
             Ship ship = new Ship(new Cell(shipFrontLocation.getText()), orientationValue, shipLength[dataTracker]);
-            Battleship.console.log("Ship built");
             Battleship.playerShips.verifyPlacement(ship);
-            Battleship.console.log("Ship verified");
             Battleship.playerShips.addShip(ship);
-            Battleship.console.log("Ship added");
             Battleship.mainBoard.drawShip(ship);
-            Battleship.console.log("Ship drawn");
 
             dataTracker = dataTracker + 1; //Keeps track of which ship we're on
             shipFrontLocation.setText("");
