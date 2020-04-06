@@ -11,7 +11,7 @@ public class Network {
     private ServerSocket dataServer;
     private Socket dataSocket;
 
-    private final String ip = "127.0.0.1";
+    private String otherPlayerIP = "localhost";
 
     private ObjectInputStream inFromOtherPlayer;
     private ObjectOutputStream outToOtherPlayer;
@@ -67,8 +67,10 @@ public class Network {
 
     //Searches for and joins the server hosted on port 4999. Initiates data streams in the same way as the host.
     public void joinGame() throws IOException{
-        socket = new Socket(ip, 4999);
-        dataSocket = new Socket(ip, 5000);
+
+        
+        socket = new Socket(otherPlayerIP, 4999);
+        dataSocket = new Socket(otherPlayerIP, 5000);
         System.out.println("Joined successfully");
 
         //Setup chatting
@@ -229,6 +231,10 @@ public class Network {
             catch(IOException except) {
                 Battleship.console.log("Error closing sockets");
             }
+    }
+
+    public void setIP(String ip){
+        this.otherPlayerIP = ip;
     }
     
     public void closeGame(){

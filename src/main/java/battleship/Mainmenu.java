@@ -45,14 +45,8 @@ public class Mainmenu {
         //Search for existing server when pressed
         joinButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-               try {
-                    Battleship.console.log("Attempting to join game...");
-                    Battleship.network.joinGame();
-                    Battleship.console.log("Game connected!");
-               }
-               catch (IOException except) {
-                    Battleship.console.log("ERROR: Joining game failed. Please try again.");
-               }
+                    Battleship.console.log("Enter IP of other player");
+                    Battleship.networkMenu();
             }          
         });
 

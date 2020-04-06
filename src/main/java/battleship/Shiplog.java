@@ -31,7 +31,7 @@ public class Shiplog {
         boolean orientation = ship.getOrientation();
 
         //Checks if hanging off the edge.
-        if((orientation && (column + length) > 10) || (!orientation && (row + length) > 10)) {
+        if((orientation && (column + length) > 11) || (!orientation && (row + length) > 11)) {
             throw new Exception("Not enough space in this location.");
         }
         

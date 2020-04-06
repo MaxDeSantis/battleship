@@ -9,14 +9,6 @@ import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 import java.awt.*;
 
-//Current Bugs:
-/*
-1) Weird looping
-2) Not verifying when other client is ready
-3) Error when transmitting cell
-*/
-
-
 public class Battleship {
     //Main functionality classes
     public static Battleship battleship;
@@ -26,6 +18,7 @@ public class Battleship {
     public static Gamemenu gameMenu;
     public static Shipbuildmenu buildMenu;
     public static Network network;
+    public static NetworkMenu networkMenu;
 
     //Managing overall frame
     private static JFrame mainFrame;
@@ -55,6 +48,7 @@ public class Battleship {
         mainFrame.add(menu.getPanel(), constraints);
         mainFrame.add(gameMenu.getPanel(), constraints);
         mainFrame.add(shipBuilder.getPanel(), constraints);
+        mainFrame.add(networkMenu.getPanel(), constraints);
 
         //Managing layout of the console portion
         constraints.gridx = 0;
@@ -89,6 +83,7 @@ public class Battleship {
         gameMenu = new Gamemenu();
         buildMenu = new Shipbuildmenu();
         network = new Network();
+        networkMenu = new NetworkMenu();
         playerShips = new Shiplog();
         enemyShips = new Shiplog();
         
@@ -98,13 +93,21 @@ public class Battleship {
     public static void shipSelect() {
         mainMenu.setVisible(false);
         gameMenu.setVisible(false);
+        networkMenu.setVisible(false);
         buildMenu.setVisible(true);
+    }
+
+    public static void networkMenu() {
+        mainMenu.setVisible(false);
+        gameMenu.setVisible(false);
+        buildMenu.setVisible(false);
+        networkMenu.setVisible(true);
     }
 
     public static void playGame() {
         mainMenu.setVisible(false);
         buildMenu.setVisible(false);
-
+        networkMenu.setVisible(false);
         gameMenu.setVisible(true);
     }
 }
