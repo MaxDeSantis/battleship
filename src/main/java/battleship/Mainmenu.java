@@ -3,7 +3,6 @@ package battleship;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.IOException;
 
 public class Mainmenu {
 
@@ -11,7 +10,7 @@ public class Mainmenu {
     private JLabel titleLabel;
 
     private JButton hostButton;
-    private JButton joinButton;
+    public JButton joinButton;
     private JButton exitButton;
 
     public Mainmenu() {
@@ -30,14 +29,9 @@ public class Mainmenu {
         //Create server when pressed
         hostButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-               try {
-                    Battleship.console.log("Attempting to join game...");
+                    Battleship.console.log("Attempting to host game...");
                     Battleship.network.hostGame();
                     Battleship.console.log("Game connected!");
-               }
-               catch(IOException except) {
-                    Battleship.console.log("ERROR: Hosting game failed. Please try again.");
-               }
             }          
         });
          
@@ -45,7 +39,6 @@ public class Mainmenu {
         //Search for existing server when pressed
         joinButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                    Battleship.console.log("Enter IP of other player");
                     Battleship.networkMenu();
             }          
         });
@@ -73,7 +66,11 @@ public class Mainmenu {
     }
 
     public void closeGame() {
-        Battleship.network.closeGame();
+        if(Battleship.network.connection) {
+            Battleship.network.transmitInformation("EXIT");
+            Battleship.network.closeConnections();
+        }
+        
         System.exit(0);
     }
 

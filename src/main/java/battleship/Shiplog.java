@@ -3,13 +3,15 @@ package battleship;
 public class Shiplog {
 
     private Cell[] takenCells;
+    private Cell[] hitCells;
     private int nextFreeIndex;
 
     public Shiplog() {
         takenCells = new Cell[17]; // At most, 17 cells can have ships in them
-
+        hitCells = new Cell[17];
         for(int i = 0; i < 17; ++i) {
             takenCells[i] = new Cell();
+            hitCells[i] = new Cell();
         }
         nextFreeIndex = 0;
     }
@@ -55,6 +57,34 @@ public class Shiplog {
             }
         }
 
+        return value;
+    }
+
+    public void resetIndex() {
+        nextFreeIndex = 0;
+    }
+
+    public void addHitCell(Cell cell) {
+        hitCells[nextFreeIndex] = cell;
+        ++nextFreeIndex;
+    }
+
+    public boolean checkHitCell(Cell cell) {
+        
+        boolean value = false;
+        for(int i = 0; i < 17; ++i) {
+            if(hitCells[i].equals(cell)) {
+                value = true;
+            }
+        }
+        return value;
+    }
+
+    public boolean allHit() {
+        boolean value = false;
+        if(nextFreeIndex > 16) {
+            value = true;
+        }
         return value;
     }
 }

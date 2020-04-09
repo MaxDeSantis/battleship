@@ -32,6 +32,7 @@ public class NetworkMenu {
                 ip = ipTextField.getText();
                 Battleship.network.setIP(ip);
                 try {
+                    Battleship.console.log("Attempting to join game...");
                     Battleship.network.joinGame();
                 }
                 catch(IOException except) {

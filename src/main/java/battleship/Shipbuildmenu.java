@@ -18,11 +18,11 @@ public class Shipbuildmenu {
     private boolean orientationValue = true;
 
     //Used to track which ship is currently being placed and how long it should be.
-    private String[] shipDatabase = {"Carrier",
-                                    "Battleship",
-                                    "Submarine",
-                                    "Cruiser",
-                                    "Destroyer"};
+    private String[] shipDatabase = {"Carrier, length 5",
+                                    "Battleship, length 4",
+                                    "Submarine, length 3",
+                                    "Cruiser, length 3",
+                                    "Destroyer, length 2"};
     private int[] shipLength = {5, 4, 3, 3, 2};
     private int dataTracker = 0;
 
@@ -30,7 +30,7 @@ public class Shipbuildmenu {
         buildMenu = new JPanel();
         buildMenu.setLayout(new GridLayout(0, 1, 0, 20));
         instructionsLabel = new JLabel("<html>You are placing your ships.<br>(1)Enter the cell of the front of the ship e.g. A3, C5<br>(2)Choose orientation of the ship.<br>(3)Confirm ship placement.</html>");
-        currentShip = new JLabel("Placing ship: Carrier");
+        currentShip = new JLabel("Placing ship: Carrier, length 5");
         shipFrontLocation = new JTextField("", 3);
         orientation = new JButton("Horizontal");
         confirm = new JButton("CONFIRM");
@@ -77,6 +77,7 @@ public class Shipbuildmenu {
 
             if(dataTracker > 4) {
                 Battleship.playGame();
+                Battleship.playerShips.resetIndex();
             }
             else {
                 currentShip.setText("Placing ship: " + shipDatabase[dataTracker]);

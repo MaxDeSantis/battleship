@@ -43,23 +43,39 @@ public class Gameboard {
         return boardPanel;
     }
 
+    public void clear() {
+        labelBoards();
+    }
+
     public void updatePlayerField(Cell cell, boolean hit) {
         //Creates new red X JLabel to replace previous.
-        if(hit) {
+        if(hit && !Battleship.playerShips.checkHitCell(cell)) {
             playerFieldSpaces[cell.getRow()][cell.getColActual()].setText("<html><font color = 'red'>X</font></html>");
+            Battleship.playerShips.addHitCell(cell);
+            
+            Battleship.console.log("Enemy hit on " + cell.getValue());
+
+            if(Battleship.playerShips.allHit()) {
+                Battleship.network.transmitInformation("OVER");
+                Battleship.lostGame();
+            }
         }
         //creates new white O JLabel to replace previous.
         else {
             playerFieldSpaces[cell.getRow()][cell.getColActual()].setText("<html><font color = 'blue'>O</font></html>");
+            Battleship.console.log("Enemy miss on " + cell.getValue());
         }
     }
 
     public void updateEnemyField(Cell cell, boolean hit) {
-        if(hit) {
+        if(hit && !Battleship.enemyShips.checkHitCell(cell)) {
             enemyFieldSpaces[cell.getRow()][cell.getColActual()].setText("<html><font color = 'red'>X</font></html>");
+            Battleship.enemyShips.addHitCell(cell);
+            Battleship.console.log("You scored a hit on " + cell.getValue());
         }
         else {
             enemyFieldSpaces[cell.getRow()][cell.getColActual()].setText("<html><font color = 'blue'>O</font></html>");
+            Battleship.console.log("You missed on " + cell.getValue());
         }
     }
 

@@ -54,7 +54,6 @@
           <configuration>
             <archive>
               <manifest>
-                    <!-- give full qualified name of your main class-->
                 <mainClass>battleship.Battleship</mainClass>
               </manifest>
             </archive>
