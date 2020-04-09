@@ -63,6 +63,13 @@ public class Shipbuildmenu {
         });
     }
 
+    public void clear() {
+        dataTracker = 0;
+        currentShip.setText("Placing Ship: Carrier, length 5");
+        orientation.setText("Horizontal");
+        orientationValue = true;
+    }
+
     //Will verify location to be placed, draw the ship on the board, and update the Shiplog
     public void buildShip() {
 

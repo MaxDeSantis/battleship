@@ -23,6 +23,7 @@ public class Network {
     private Thread cellTransmission;
     private Thread hostGameThread;
     private Thread joinGameThread;
+    //private Thread playAgainThread;
 
     //Objects to faciliate said data transmission
     private Object inputData;
@@ -34,9 +35,7 @@ public class Network {
     private String receivedMsg;
     private boolean host;
     public boolean connection;
-    public boolean wantToPlayAgain;
-
-    
+    public boolean theyWantRepeat = false;
 
     public Network() {
     }
@@ -150,7 +149,17 @@ public class Network {
         
     }
 
-    
+    /*
+    public void playAgain() {
+        playAgainThread = new Thread() {
+            public void run() {
+
+            }
+        };
+
+        playAgainThread.start();
+        playAgainThread.setName("Waiting for play again response thread");
+    } */
 
     //Transmits simple chat string to other player's console.
     public void sendMessage(String message) {
@@ -167,7 +176,7 @@ public class Network {
             }
         }
         catch(IOException except) {
-            Battleship.console.log("ERROR: Read message failed");
+            System.out.println("ERROR: Read message failed");
             playerExited();
         }
     }
@@ -214,22 +223,27 @@ public class Network {
             if(inputData instanceof Cell) {
                 transmitCell = (Cell) inputData;
 
-                //Check if it's a hit or miss. Result sent back to other player.
-                if(Battleship.playerShips.checkLog(transmitCell)) {
-
-                    Battleship.mainBoard.updatePlayerField(transmitCell, true);
-                    outToOtherPlayer.writeObject(new String("HIT"));
-                    
-                }
-                else {
-                    outToOtherPlayer.writeObject(new String("MISS"));
-                    Battleship.mainBoard.updatePlayerField(transmitCell, false);
-                }
-                
                 //Self explanatory - updates turn label each round
                 outcomeCell = transmitCell;
                 Battleship.myTurn = true;
                 Battleship.gameMenu.updateTurnLabel();
+
+                //Check if it's a hit or miss. Result sent back to other player.
+                if(Battleship.playerShips.checkLog(transmitCell)) {
+                    Battleship.mainBoard.updatePlayerField(transmitCell, true);
+                    outToOtherPlayer.writeObject(new String("HIT"));
+
+                    if(Battleship.playerShips.allHit()) {
+                        Battleship.network.transmitInformation("OVER");
+                        Battleship.lostGame();
+                    }
+                    
+                }
+                else {
+                    Battleship.mainBoard.updatePlayerField(transmitCell, false);
+                    outToOtherPlayer.writeObject(new String("MISS"));
+                }
+                
             }
             
             //A cell was not transmitted, so check if it was an information string.
@@ -264,18 +278,21 @@ public class Network {
                 }
 
                 //Other player opted to play again.
-                else if(information.equals("REPEAT")) {
+                else if(information.equals("REPEAT1")) {
                     Battleship.console.log("Other player wants to play again");
+                    theyWantRepeat = true;
 
-                    
-                    if(wantToPlayAgain) {
-                        Battleship.reset();
-                    }
+                }
+
+                //Other player agreed to play again.
+                else if(information.equals("REPEAT2")) {
+                    Battleship.reset();
+
                 }
 
                 //Error handling
                 else {
-                    Battleship.console.log("String unidentifiable in readCellTransmission");
+                    System.out.println("String unidentifiable in readCellTransmission");
                 }
             }
 
@@ -332,33 +349,38 @@ public class Network {
 
     //Runs when the other player exits, facilities safe closing.
     public void playerExited() {
-        closeConnections();
-        Battleship.returnToMainMenu();
-        Battleship.console.log("Other player has exited the game.");
+        if(connection) {
+            closeConnections();
+            Battleship.returnToMainMenu();
+            System.out.println("ran 'return to main menu' method");
+            Battleship.console.log("Other player has exited the game.");
+        }
     }
 
     //Try to safely close all sockets and stream objects.
     public void closeConnections(){
         if(connection) {
             connection = false;
-
             try {
                 if(host) {
                     host = false;
                     server.close();
                     dataServer.close();
                 }
+
+                socket.close();
+                dataSocket.close();
+
                 reader.close();
                 printer.close();
                 inFromOtherPlayer.close();
                 outToOtherPlayer.close();
-                socket.close();
-                dataSocket.close();
+
             }
 
             //Failed to close something.
             catch(IOException except) {
-                Battleship.console.log("Error closing sockets");
+                System.out.println("Error closing sockets");
                 except.printStackTrace();
             }
         }

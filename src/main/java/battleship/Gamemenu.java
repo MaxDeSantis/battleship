@@ -35,15 +35,20 @@ public class Gamemenu {
             public void actionPerformed(ActionEvent e) {
                if(Battleship.myTurn) {
                    try {
+                       Battleship.network.transmitInformation("OVER");
+                       gameOver(true);
+                       /*
                         Cell choice = new Cell(targetCell.getText());
 
                         if(!Battleship.enemyShips.checkHitCell(choice)) {
                             Battleship.network.transmitCell(choice);
+                            targetCell.setText("");
                             updateTurnLabel();
                         }
                         else {
                             Battleship.console.log("You've already hit that cell.");
                         }
+                        */
                         
                    }
                    catch(Exception except) {
@@ -60,8 +65,14 @@ public class Gamemenu {
         //Players opted to play again.
         repeatButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Battleship.network.wantToPlayAgain = true;
-                Battleship.network.transmitInformation("REPEAT");
+
+                if(Battleship.network.theyWantRepeat) {
+                    Battleship.network.transmitInformation("REPEAT2");
+                    Battleship.reset();
+                }
+                else {
+                    Battleship.network.transmitInformation("REPEAT1");
+                }
             }
         });
 
@@ -83,6 +94,8 @@ public class Gamemenu {
         gameMenu.add(titleLabel);
         gameMenu.add(targetCell);
         gameMenu.add(fireButton);
+        gameMenu.add(repeatButton);
+        gameMenu.add(returnButton);
         gameMenu.setVisible(false);
     }
 
@@ -110,16 +123,21 @@ public class Gamemenu {
         fireButton.setEnabled(true);
     }
 
+    public void setLabel(String label) {
+        titleLabel.setText(label);
+    }
+
     //Formats GUI for end of game options.
     public void gameOver(boolean displayButtons) {
         if(displayButtons) {
-            fireButton.setEnabled(false);
-            titleLabel.setText("LOSER");
+            fireButton.setVisible(false);
+            targetCell.setVisible(false);
             returnButton.setVisible(true);
             repeatButton.setVisible(true);
         }
         else {
-            fireButton.setEnabled(true);
+            fireButton.setVisible(true);
+            targetCell.setVisible(true);
             returnButton.setVisible(false);
             repeatButton.setVisible(false);
         }

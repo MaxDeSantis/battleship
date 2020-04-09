@@ -16,6 +16,15 @@ public class Shiplog {
         nextFreeIndex = 0;
     }
 
+    //This clears the logs to work as new.
+    public void clear() {
+        for(int i = 0; i < 17; ++i) {
+            takenCells[i] = new Cell();
+            hitCells[i] = new Cell();
+        }
+        nextFreeIndex = 0;
+    }
+
     //This method adds the ship to the list of taken up cells.
     public void addShip(Ship ship) {
 

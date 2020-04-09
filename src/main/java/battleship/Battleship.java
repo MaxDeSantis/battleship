@@ -10,11 +10,7 @@ import javax.swing.JFrame;
 import java.awt.*;
 
 /* 
-To-Dos as of 4/6/2020 1:46pm:
-Improve program response when one player disconnects but other doesn't.
-Turn JoinGame into it's own thread.
-Implement win conditions.
-Implement "play again" button.
+To-Dos as of 4/9/20:
 Put "exit" button on every page. Maybe include with gameboard rather than mainmenu?
 Implement "return to main menu" button.
 Improve "your turn" notification.
@@ -105,25 +101,33 @@ public class Battleship {
 
     public static void wonGame() {
         console.log("You win!");
+        gameMenu.setLabel("WINNER");
         gameMenu.gameOver(true);
     }
 
     public static void lostGame() {
         console.log("You lost!");
+        gameMenu.setLabel("LOSER");
         gameMenu.gameOver(true);
         
     }
 
-    public static void reset() { //FIXME update this to properly function.
+    public static void reset() {
         mainBoard.clear();
-        //network.reset();
-        //playerShips.clear();
-        //enemyShips.clear();
+        playerShips.clear();
+        enemyShips.clear();
+        buildMenu.clear();
+        gameMenu.gameOver(false);
         shipSelect();
     }
 
     public static void returnToMainMenu() {
-        network.closeConnections();
+        playerShips.clear();
+        enemyShips.clear();
+        buildMenu.clear();
+        gameMenu.gameOver(false);
+
+        mainMenu.joinButton.setEnabled(true);
         gameMenu.setVisible(false);
         networkMenu.setVisible(false);
         buildMenu.setVisible(false);
