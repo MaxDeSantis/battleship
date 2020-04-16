@@ -76,7 +76,7 @@ public class Shipbuildmenu {
         try {
             Ship ship = new Ship(new Cell(shipFrontLocation.getText()), orientationValue, shipLength[dataTracker]);
             Battleship.playerShips.verifyPlacement(ship);
-            Battleship.playerShips.addShip(ship);
+            Battleship.playerShips.addShip(ship, dataTracker);
             Battleship.mainBoard.drawShip(ship);
 
             dataTracker = dataTracker + 1; //Keeps track of which ship we're on
@@ -84,7 +84,6 @@ public class Shipbuildmenu {
 
             if(dataTracker > 4) {
                 Battleship.playGame();
-                Battleship.playerShips.resetIndex();
             }
             else {
                 currentShip.setText("Placing ship: " + shipDatabase[dataTracker]);

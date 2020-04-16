@@ -6,17 +6,21 @@ public class Cell implements java.io.Serializable{
     private int row;
     private char col;
     private int colActual;
+    private boolean hit;
 
     public Cell() {
         row = 0;
         col = 0;
         colActual = 0;
+        
+        this.hit = false;
     }
 
     public Cell(int row, int colActual) {
         this.row = row;
         this.colActual = colActual;
         this.col = (char) (colActual + 'A' - 1);
+        this.hit = false;
     }
 
     public Cell(String cell) throws Exception{
@@ -36,6 +40,7 @@ public class Cell implements java.io.Serializable{
             else {
                 throw new Exception("Invalid row.");
             }
+            this.hit = false;
     }
     
     public String getValue() {
@@ -52,6 +57,14 @@ public class Cell implements java.io.Serializable{
 
     public char getCol() {
         return col;
+    }
+
+    public boolean isCellHit() {
+        return hit;
+    }
+
+    public void cellGotHit() {
+        hit = true;
     }
 
     public boolean equals(Cell compareCell) {

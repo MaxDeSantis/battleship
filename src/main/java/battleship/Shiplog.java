@@ -2,35 +2,98 @@ package battleship;
 
 public class Shiplog {
 
-    private Cell[] takenCells;
-    private Cell[] hitCells;
-    private int nextFreeIndex;
+    private Cell[] carrier;
+    private Cell[] battleship;
+    private Cell[] submarine;
+    private Cell[] cruiser;
+    private Cell[] destroyer;
+
+    /*
+    "Carrier, length 5",
+    "Battleship, length 4",
+    "Submarine, length 3",
+    "Cruiser, length 3",
+    "Destroyer, length 2"}; */
 
     public Shiplog() {
-        takenCells = new Cell[17]; // At most, 17 cells can have ships in them
-        hitCells = new Cell[17];
-        for(int i = 0; i < 17; ++i) {
-            takenCells[i] = new Cell();
-            hitCells[i] = new Cell();
+        //Defines how many cells each ship can take up.
+        carrier = new Cell[5];
+        battleship = new Cell[4];
+        submarine = new Cell[3];
+        cruiser = new Cell[3];
+        destroyer = new Cell[5];
+
+        //Initializes each ship array.
+        for(int i = 0; i < 5; ++i) {
+            carrier[i] = new Cell();
         }
-        nextFreeIndex = 0;
+        for(int i = 0; i < 4; ++i) {
+            battleship[i] = new Cell();
+        }
+        for(int i = 0; i < 3; ++i) {
+            submarine[i] = new Cell();
+            cruiser[i] = new Cell();
+        }
+        for(int i = 0; i < 2; ++i) {
+            destroyer[i] = new Cell();
+        }
     }
 
     //This clears the logs to work as new.
     public void clear() {
-        for(int i = 0; i < 17; ++i) {
-            takenCells[i] = new Cell();
-            hitCells[i] = new Cell();
+
+        for(int i = 0; i < 5; ++i) {
+            carrier[i] = new Cell();
         }
-        nextFreeIndex = 0;
+        for(int i = 0; i < 4; ++i) {
+            battleship[i] = new Cell();
+        }
+        for(int i = 0; i < 3; ++i) {
+            submarine[i] = new Cell();
+            cruiser[i] = new Cell();
+        }
+        for(int i = 0; i < 2; ++i) {
+            destroyer[i] = new Cell();
+        }
+
     }
 
     //This method adds the ship to the list of taken up cells.
-    public void addShip(Ship ship) {
+    public void addShip(Ship ship, int shipNumber) {
 
-        for(int i = 0; i < ship.getLength(); ++i) {
-            takenCells[nextFreeIndex] = ship.getCell(i);
-            ++nextFreeIndex;
+        switch(shipNumber) {
+            case 0: 
+                for(int i = 0; i < 5; ++i) {
+                    carrier[i] = ship.getCell(i);
+                }
+                break;
+
+            case 1:
+                for(int i = 0; i < 4; ++i) {
+                    battleship[i] = ship.getCell(i);
+                }
+                break;
+
+            case 2:
+                for(int i = 0; i < 3; ++i) {
+                    submarine[i] = ship.getCell(i);
+                }
+                break;
+
+            case 3:
+                for(int i = 0; i < 3; ++i) {
+                    cruiser[i] = ship.getCell(i);
+                }
+                break;
+
+            case 4:
+                for(int i = 0; i < 2; ++i) {
+                    destroyer[i] = ship.getCell(i);
+                }
+                break;
+
+            default:
+            break;
         }
     }
 
@@ -61,39 +124,87 @@ public class Shiplog {
         boolean value = false;
 
         for(int i = 0; i < 17; ++i) {
-            if(cell.getColActual() == takenCells[i].getColActual() && cell.getRow() == takenCells[i].getRow()) {
+            if(cell.getColActual() == takenCells[i].getColActual() && cell.getRow() == takenCells[i].getRow()) { //FIXME 
                 value = true;
             }
         }
 
         return value;
-    }
-
-    public void resetIndex() {
-        nextFreeIndex = 0;
     }
 
     public void addHitCell(Cell cell) {
-        hitCells[nextFreeIndex] = cell;
-        ++nextFreeIndex;
+        for(int i = 0; i < 5; ++i) {
+            if(carrier[i].equals(cell)) {
+                carrier[i].cellGotHit();
+                return;
+            }
+        }
+
+        for(int i = 0; i < 4; ++i) {
+            if(battleship[i].equals(cell)) {
+                battleship[i].cellGotHit();
+                return;
+            }
+        }
+
+        for(int i = 0; i < 3; ++i) {
+            if(submarine[i].equals(cell)) {
+                submarine[i].cellGotHit();
+                return;
+            }
+            else if(cruiser[i].equals(cell)) {
+                cruiser[i].cellGotHit();
+                return;
+            }
+        }
+
+        for(int i = 0; i < 2; ++i) {
+            if(destroyer[i].equals(cell)) {
+                destroyer[i].cellGotHit();
+                return;
+            }
+        }
+
+        return;
     }
 
     public boolean checkHitCell(Cell cell) {
-        
-        boolean value = false;
-        for(int i = 0; i < 17; ++i) {
-            if(hitCells[i].equals(cell)) {
-                value = true;
+
+        for(int i = 0; i < 5; ++i) {
+            if(carrier[i].isCellHit()) {
+                return true;
             }
         }
-        return value;
+
+        for(int i = 0; i < 4; ++i) {
+            if(battleship[i].isCellHit()) {
+                return true;
+            }
+        }
+
+        for(int i = 0; i < 3; ++i) {
+            if(submarine[i].isCellHit()) {
+                return true;
+            }
+            else if(cruiser[i].isCellHit()) {
+                return true;
+            }
+        }
+
+        for(int i = 0; i < 2; ++i) {
+            if(destroyer[i].isCellHit()) {
+                return true;
+            }
+        }
+
+        return false;
+        
+
     }
 
-    public boolean allHit() {
+    public boolean allHit() { //FIXME
         boolean value = false;
-        if(nextFreeIndex > 16) {
-            value = true;
-        }
+        
         return value;
     }
 }
