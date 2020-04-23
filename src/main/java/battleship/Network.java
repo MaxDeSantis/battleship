@@ -152,6 +152,7 @@ public class Network {
 
     //Transmits simple chat string to other player's console.
     public void sendMessage(String message) {
+        System.out.println("Sending message");
         printer.println("<ENEMY>" + message);
         printer.flush();
     }
@@ -161,7 +162,7 @@ public class Network {
         try {
             receivedMsg = reader.readLine();
             if(!receivedMsg.equals(null)) {
-                Battleship.console.log(reader.readLine());
+                Battleship.console.log(receivedMsg);
             }
         }
         catch(IOException except) {
@@ -219,16 +220,19 @@ public class Network {
 
                 //Check if it's a hit or miss. Result sent back to other player.
                 if(Battleship.playerShips.checkLog(transmitCell)) {
+
+                    System.out.println("Other player hit cell: " + transmitCell.getValue());
                     Battleship.mainBoard.updatePlayerField(transmitCell, true);
                     outToOtherPlayer.writeObject(new String("HIT"));
 
-                    if(Battleship.playerShips.allHit()) {
+                    if(Battleship.playerShips.shipStatus()) {
                         Battleship.network.transmitInformation("OVER");
                         Battleship.lostGame();
                     }
                     
                 }
                 else {
+                    System.out.println("Other player missed cell: " + transmitCell.getValue());
                     Battleship.mainBoard.updatePlayerField(transmitCell, false);
                     outToOtherPlayer.writeObject(new String("MISS"));
                 }
@@ -270,13 +274,32 @@ public class Network {
                 else if(information.equals("REPEAT1")) {
                     Battleship.console.log("Other player wants to play again");
                     theyWantRepeat = true;
-
                 }
 
                 //Other player agreed to play again.
                 else if(information.equals("REPEAT2")) {
                     Battleship.reset();
+                }
 
+                else if(information.substring(0, 4).equals("DEST")) {
+                    int index = information.charAt(4) - '0';
+
+                    if(index == 1) {
+                        Battleship.gameMenu.destroy("carrier");
+                    }
+                    else if(index == 2) {
+                        Battleship.gameMenu.destroy("battleship");
+                    }
+                    else if(index == 3) {
+                        Battleship.gameMenu.destroy("submarine");
+                    }
+                    else if(index == 4) {
+                        Battleship.gameMenu.destroy("cruiser");
+                    }
+                    
+                    else if(index == 5) {
+                        Battleship.gameMenu.destroy("destroyer");
+                    }
                 }
 
                 //Error handling

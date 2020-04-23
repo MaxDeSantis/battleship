@@ -27,6 +27,7 @@ public class Battleship {
     public static Gameboard mainBoard;
     public static Console console;
     public static Gamemenu gameMenu;
+    public static GameOverMenu gameOverMenu;
     public static Shipbuildmenu buildMenu;
     public static Network network;
     public static NetworkMenu networkMenu;
@@ -41,7 +42,7 @@ public class Battleship {
     public static boolean gameOver = false;
     public static boolean myTurn;
 
-    public Battleship(Mainmenu menu, Gameboard board, Console console, Gamemenu gameMenu, Shipbuildmenu shipBuilder) {
+    public Battleship(Mainmenu menu, Gameboard board, Console console, Gamemenu gameMenu, Shipbuildmenu shipBuilder, GameOverMenu gameOverMenu) {
         
         mainFrame = new JFrame("Battleship");
         mainFrame.setLocation(200, 200);
@@ -60,6 +61,7 @@ public class Battleship {
         mainFrame.add(gameMenu.getPanel(), constraints);
         mainFrame.add(shipBuilder.getPanel(), constraints);
         mainFrame.add(networkMenu.getPanel(), constraints);
+        mainFrame.add(gameOverMenu.getPanel(), constraints);
 
         //Managing layout of the console portion
         constraints.gridx = 0;
@@ -93,34 +95,39 @@ public class Battleship {
         mainBoard = new Gameboard();
         console = new Console();
         gameMenu = new Gamemenu();
+        gameOverMenu = new GameOverMenu();
         buildMenu = new Shipbuildmenu();
         network = new Network();
         networkMenu = new NetworkMenu();
-        playerShips = new Shiplog();
-        enemyShips = new Shiplog();
+        playerShips = new Shiplog("player");
+        enemyShips = new Shiplog("enemy");
         
-        battleship = new Battleship(mainMenu, mainBoard, console, gameMenu, buildMenu);
+        battleship = new Battleship(mainMenu, mainBoard, console, gameMenu, buildMenu, gameOverMenu);
     }
 
     public static void wonGame() {
         console.log("You win!");
-        gameMenu.setLabel("WINNER");
+        gameOverMenu.setWinLabel(true);
         gameMenu.gameOver(true);
+        gameOverMenu.gameOver(true);
     }
 
     public static void lostGame() {
         console.log("You lost!");
-        gameMenu.setLabel("LOSER");
+        gameOverMenu.setWinLabel(false);
         gameMenu.gameOver(true);
-        
+        gameOverMenu.gameOver(true);
     }
 
     public static void reset() {
         mainBoard.clear();
         playerShips.clear();
-        enemyShips.clear();
+        enemyShips.clearHitCells();
         buildMenu.clear();
         gameMenu.gameOver(false);
+        gameOverMenu.gameOver(false);
+        console.clear();
+        console.log("Game restarted!");
         shipSelect();
     }
 
@@ -129,6 +136,7 @@ public class Battleship {
         enemyShips.clear();
         buildMenu.clear();
         gameMenu.gameOver(false);
+        gameOverMenu.gameOver(false);
 
         mainMenu.joinButton.setEnabled(true);
         gameMenu.setVisible(false);

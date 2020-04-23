@@ -7,6 +7,14 @@ public class Shiplog {
     private Cell[] submarine;
     private Cell[] cruiser;
     private Cell[] destroyer;
+    private Cell[] hitCells;
+    private int nextIndex;
+
+    private boolean carrierDestroyed;
+    private boolean battleshipDestroyed;
+    private boolean submarineDestroyed;
+    private boolean cruiserDestroyed;
+    private boolean destroyerDestroyed;
 
     /*
     "Carrier, length 5",
@@ -15,28 +23,27 @@ public class Shiplog {
     "Cruiser, length 3",
     "Destroyer, length 2"}; */
 
-    public Shiplog() {
-        //Defines how many cells each ship can take up.
-        carrier = new Cell[5];
-        battleship = new Cell[4];
-        submarine = new Cell[3];
-        cruiser = new Cell[3];
-        destroyer = new Cell[5];
+    public Shiplog(String string) {
 
-        //Initializes each ship array.
-        for(int i = 0; i < 5; ++i) {
-            carrier[i] = new Cell();
+        if(string.equals("player")) {
+            //Defines how many cells each ship can take up.
+            carrier = new Cell[5];
+            battleship = new Cell[4];
+            submarine = new Cell[3];
+            cruiser = new Cell[3];
+            destroyer = new Cell[5];
+
+            //Initializes each ship array.
+            clear();
         }
-        for(int i = 0; i < 4; ++i) {
-            battleship[i] = new Cell();
+        else if(string.equals("enemy")) {
+            hitCells = new Cell[17];
+            for(int i = 0; i < 17; ++i) {
+                hitCells[i] = new Cell();
+            }
+            nextIndex = 0;
         }
-        for(int i = 0; i < 3; ++i) {
-            submarine[i] = new Cell();
-            cruiser[i] = new Cell();
-        }
-        for(int i = 0; i < 2; ++i) {
-            destroyer[i] = new Cell();
-        }
+        
     }
 
     //This clears the logs to work as new.
@@ -56,6 +63,14 @@ public class Shiplog {
             destroyer[i] = new Cell();
         }
 
+    }
+
+    public void clearHitCells() {
+
+            for(int i = 0; i < 17; ++i) {
+                hitCells[i] = new Cell();
+            }
+            nextIndex = 0;
     }
 
     //This method adds the ship to the list of taken up cells.
@@ -108,12 +123,33 @@ public class Shiplog {
         if((orientation && (column + length) > 11) || (!orientation && (row + length) > 11)) {
             throw new Exception("Not enough space in this location.");
         }
-        
-        //Checks if overlapping
-        for(int i = 0; i < 17; ++i) {
-            for(int j = 0; j < length; ++j) {
-                if(takenCells[i].equals(ship.getCell(j))) {
-                    throw new Exception("Ship overlapping other ship.");
+
+        //Checks for overlapping.
+        for(int j = 0; j < ship.getLength(); ++j) {
+            for(int i = 0; i < 5; ++i) {
+                if(carrier[i].equals(ship.getCell(j))) {
+                    throw new Exception("Ship overlaps Carrier.");
+                }
+            }
+    
+            for(int i = 0; i < 4; ++i) {
+                if(battleship[i].equals(ship.getCell(j))) {
+                    throw new Exception("Ship overlaps Battleship.");
+                }
+            }
+    
+            for(int i = 0; i < 3; ++i) {
+                if(submarine[i].equals(ship.getCell(j))) {
+                    throw new Exception("Ship overlaps Submarine.");
+                }
+                else if(cruiser[i].equals(ship.getCell(j))) {
+                    throw new Exception("Ship overlaps Cruiser.");
+                }
+            }
+    
+            for(int i = 0; i < 2; ++i) {
+                if(destroyer[i].equals(ship.getCell(j))) {
+                    throw new Exception("Ship overlaps Destroyer.");
                 }
             }
         }
@@ -121,18 +157,53 @@ public class Shiplog {
 
     //Checks to see if a ship is at the named cell. If so, alerts of hit and logs it. If not, alerts of miss and logs it.
     public boolean checkLog(Cell cell) {
-        boolean value = false;
 
-        for(int i = 0; i < 17; ++i) {
-            if(cell.getColActual() == takenCells[i].getColActual() && cell.getRow() == takenCells[i].getRow()) { //FIXME 
-                value = true;
+        for(int i = 0; i < 5; ++i) {
+            if(carrier[i].equals(cell)) {
+                return true;
             }
         }
 
-        return value;
+        for(int i = 0; i < 4; ++i) {
+            if(battleship[i].equals(cell)) {
+                return true;
+            }
+        }
+
+        for(int i = 0; i < 3; ++i) {
+            if(submarine[i].equals(cell)) {
+                return true;
+            }
+            else if(cruiser[i].equals(cell)) {
+                return true;
+            }
+        }
+
+        for(int i = 0; i < 2; ++i) {
+            if(destroyer[i].equals(cell)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    public void addHitCell(Cell cell) {
+    public void addHitEnemyCell(Cell cell) {
+        hitCells[nextIndex] = cell;
+        hitCells[nextIndex].cellGotHit();
+        ++nextIndex;
+    }
+
+    public boolean checkEnemyCells(Cell cell) {
+        for(int i = 0; i < 17; ++i) {
+            if(hitCells[i].equals(cell)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void addHitPlayerCell(Cell cell) {
         for(int i = 0; i < 5; ++i) {
             if(carrier[i].equals(cell)) {
                 carrier[i].cellGotHit();
@@ -164,35 +235,36 @@ public class Shiplog {
                 return;
             }
         }
-
         return;
     }
 
-    public boolean checkHitCell(Cell cell) {
+    //Determines if a cell has been hit before.
+    public boolean checkPlayerCells(Cell cell) {
 
         for(int i = 0; i < 5; ++i) {
-            if(carrier[i].isCellHit()) {
+            if(carrier[i].equals(cell) && carrier[i].isCellHit()) {
                 return true;
             }
+            
         }
-
         for(int i = 0; i < 4; ++i) {
-            if(battleship[i].isCellHit()) {
+            if(battleship[i].equals(cell) && battleship[i].isCellHit()) {
                 return true;
             }
+            
         }
 
         for(int i = 0; i < 3; ++i) {
-            if(submarine[i].isCellHit()) {
+            if(submarine[i].equals(cell) && submarine[i].isCellHit()) {
                 return true;
             }
-            else if(cruiser[i].isCellHit()) {
+            else if(cruiser[i].equals(cell) && cruiser[i].isCellHit()) {
                 return true;
             }
         }
 
         for(int i = 0; i < 2; ++i) {
-            if(destroyer[i].isCellHit()) {
+            if(destroyer[i].equals(cell) && destroyer[i].isCellHit()) {
                 return true;
             }
         }
@@ -202,9 +274,87 @@ public class Shiplog {
 
     }
 
-    public boolean allHit() { //FIXME
-        boolean value = false;
-        
-        return value;
+    //Updates all whether or not a ship is sunk. Ran after every hit received. Incredibly inefficient. Returns true if all ships are sunk.
+    public boolean shipStatus() {
+        int index = 0;
+
+        if(!carrierDestroyed) {
+            for(int i = 0; i < 5; ++i) {
+                if(carrier[i].isCellHit()) {
+                    ++index;
+                }
+            }
+            if(index == 5) {
+                System.out.println("Carrier has been destroyed");
+                Battleship.network.transmitInformation("DEST1");
+                carrierDestroyed = true;
+            }
+        }
+
+        index = 0;
+        if(!battleshipDestroyed) {
+            for(int i = 0; i < 4; ++i) {
+                if(battleship[i].isCellHit()) {
+                    ++index;
+                }
+            }
+            if(index == 4) {
+                System.out.println("Battleship has been destroyed");
+                Battleship.network.transmitInformation("DEST2");
+                battleshipDestroyed = true;
+            }
+        }
+
+        index = 0;
+        if(!submarineDestroyed) {
+            for(int i = 0; i < 3; ++i) {
+                if(submarine[i].isCellHit()) {
+                    ++index;
+                }
+            }
+            if(index == 3) {
+                System.out.println("Submarine has been destroyed");
+                Battleship.network.transmitInformation("DEST3");
+                submarineDestroyed = true;
+            }
+        }
+
+        index = 0;
+        if(!cruiserDestroyed) {
+            for(int i = 0; i < 3; ++i) {
+                if(cruiser[i].isCellHit()) {
+                    ++index;
+                }
+            }
+            if(index == 3) {
+                System.out.println("Cruiser has been destroyed");
+                Battleship.network.transmitInformation("DEST4");
+                cruiserDestroyed = true;
+            }
+        }
+
+        index = 0;
+        if(!destroyerDestroyed) {
+            for(int i = 0; i < 2; ++i) {
+                if(destroyer[i].isCellHit()) {
+                    ++index;
+                }
+            }
+            if(index == 2) {
+                System.out.println("Destroyer has been destroyed");
+                Battleship.network.transmitInformation("DEST5");
+                destroyerDestroyed = true;
+            }
+        }
+
+
+
+
+
+        if(carrierDestroyed && battleshipDestroyed && submarineDestroyed && cruiserDestroyed && destroyerDestroyed) {
+            System.out.println("All ships have been destroyed");
+            return true;
+        }
+        return false;
     }
 }

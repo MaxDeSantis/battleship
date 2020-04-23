@@ -69,6 +69,10 @@ public class Console {
         verticalBar.setValue(verticalBar.getMaximum());
     }
 
+    public void clear() {
+        consoleTextBox.setText("");
+    }
+
     public JPanel getPanel() {
         return consolePanel;
     }
