@@ -11,12 +11,17 @@ public class Gamemenu {
     private JLabel titleLabel;
     private JButton fireButton;
     private JTextField targetCell;
-    private JButton repeatButton;
-    private JButton returnButton;
+    private JLabel enemyShips;
+    private JLabel carrier;
+    private JLabel battleship;
+    private JLabel submarine;
+    private JLabel cruiser;
+    private JLabel destroyer;
+
 
     public Gamemenu() {
         gameMenu = new JPanel();
-        gameMenu.setLayout(new GridLayout(0, 1, 0, 20));
+        gameMenu.setLayout(new GridLayout(0, 1, 0, 10));
 
         readyLabel = new JLabel("Waiting on other player...");
         titleLabel = new JLabel();
@@ -27,23 +32,16 @@ public class Gamemenu {
 
         fireButton = new JButton("Fire!");;
 
-        repeatButton = new JButton("Play again?");
-        returnButton = new JButton("Return to main menu");
-
         //Sends targetted cell to other player to determine outcome.
         fireButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                if(Battleship.myTurn) {
                    try {
-                       //FIXME Debugging for after game menu.
-                       Battleship.network.transmitInformation("OVER");
-                       Battleship.lostGame();
-                       //gameOver(true);
-
-                       /*
+                       
                         Cell choice = new Cell(targetCell.getText());
 
-                        if(!Battleship.enemyShips.checkHitCell(choice)) {
+                        if(!Battleship.enemyShips.checkEnemyCells(choice)) {
+                            System.out.println("Checkhit cell false");
                             Battleship.network.transmitCell(choice);
                             targetCell.setText("");
                             updateTurnLabel();
@@ -51,8 +49,6 @@ public class Gamemenu {
                         else {
                             Battleship.console.log("You've already hit that cell.");
                         }
-                        */
-                        
                    }
                    catch(Exception except) {
                        Battleship.console.log(except.getMessage());
@@ -65,40 +61,31 @@ public class Gamemenu {
             }          
         });
 
-        //Players opted to play again.
-        repeatButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-
-                if(Battleship.network.theyWantRepeat) {
-                    Battleship.network.transmitInformation("REPEAT2");
-                    Battleship.reset();
-                }
-                else {
-                    Battleship.network.transmitInformation("REPEAT1");
-                }
-            }
-        });
-
-        //Players returned to menu.
-        returnButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                Battleship.returnToMainMenu();
-            }
-        });
-
         //Format buttons for UX
-        returnButton.setVisible(false);
-        repeatButton.setVisible(false);
         fireButton.setEnabled(false);
         titleLabel.setVisible(false);
+
+        //Labels for which ships have been destroyed
+        enemyShips = new JLabel("Enemy Ships Remaining:");
+        carrier = new JLabel("<html><font color = 'green'>Carrier</font></html>");
+        battleship = new JLabel("<html><font color = 'green'>Battleship</font></html>");
+        submarine = new JLabel("<html><font color = 'green'>Submarine</font></html>");
+        cruiser = new JLabel("<html><font color = 'green'>Cruiser</font></html>");
+        destroyer = new JLabel("<html><font color = 'green'>Destroyer</font></html>");
 
         //Add to main panel.
         gameMenu.add(readyLabel);
         gameMenu.add(titleLabel);
         gameMenu.add(targetCell);
         gameMenu.add(fireButton);
-        gameMenu.add(repeatButton);
-        gameMenu.add(returnButton);
+
+        gameMenu.add(enemyShips);
+        gameMenu.add(carrier);
+        gameMenu.add(battleship);
+        gameMenu.add(submarine);
+        gameMenu.add(cruiser);
+        gameMenu.add(destroyer);
+
         gameMenu.setVisible(false);
     }
 
@@ -130,19 +117,32 @@ public class Gamemenu {
         titleLabel.setText(label);
     }
 
+    //Strike out label if you've destroyed one of their ships.
+    public void destroy(String ship) {
+        if(ship.equals("carrier")) {
+            Battleship.console.log("Enemy carrier destroyed.");
+            carrier.setText("<html><font color = 'red'><s>Carrier</s></fonnt></html>");
+        }
+        if(ship.equals("battleship")) {
+            Battleship.console.log("Enemy battleship destroyed");
+            battleship.setText("<html><font color = 'red'><s>Battleship</s></font></html>");
+        }
+        if(ship.equals("submarine")) {
+            Battleship.console.log("Enemy submarine destroyed");
+            submarine.setText("<html><font color = 'red'><s>Submarine</s></font></html>");
+        }
+        if(ship.equals("cruiser")) {
+            Battleship.console.log("Enemy cruiser destroyed");
+            cruiser.setText("<html><font color = 'red'><s>Cruiser</s></font></html>");
+        }
+        if(ship.equals("destroyer")) {
+            Battleship.console.log("Enemy destroyer destroyed");
+            destroyer.setText("<html><font color = 'red'><s>Destroyer</s></font></html>");
+        }
+    }
+
     //Formats GUI for end of game options.
     public void gameOver(boolean displayButtons) {
-        if(displayButtons) {
-            fireButton.setVisible(false);
-            targetCell.setVisible(false);
-            returnButton.setVisible(true);
-            repeatButton.setVisible(true);
-        }
-        else {
-            fireButton.setVisible(true);
-            targetCell.setVisible(true);
-            returnButton.setVisible(false);
-            repeatButton.setVisible(false);
-        }
+        gameMenu.setVisible(false);
     }
 }

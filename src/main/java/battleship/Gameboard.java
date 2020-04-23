@@ -38,21 +38,9 @@ public class Gameboard {
         //Labels axes and places dash in each space.
         labelBoards();
 
-        //Provides proper formatting for components
-        boardPanelConstraints = new GridBagConstraints();
-        boardPanelConstraints.insets = insets;
-        boardPanelConstraints.gridx = 0;
-        boardPanelConstraints.gridy = 0;
-        boardPanel.add(enemyLabel, boardPanelConstraints);
+        addLabels();
 
-        boardPanelConstraints.gridy = 1;
-        boardPanel.add(enemyBoard, boardPanelConstraints);
-
-        boardPanelConstraints.gridy = 2;
-        boardPanel.add(playerLabel, boardPanelConstraints);
-
-        boardPanelConstraints.gridy = 3;
-        boardPanel.add(playerBoard, boardPanelConstraints);
+        
     }
 
     public JPanel getPanel() {
@@ -60,20 +48,28 @@ public class Gameboard {
     }
 
     public void clear() {
+
+        boardPanel.removeAll();
+        
         labelBoards();
+
+        addLabels();
     }
 
     //If the player got hit, updates field with Red X or blue O.
     public void updatePlayerField(Cell cell, boolean hit) {
+
         //Creates new red X JLabel to replace previous.
-        if(hit && !Battleship.playerShips.checkHitCell(cell)) {
+        if(hit) {
+            System.out.println("Updating game board: hit");
             playerFieldSpaces[cell.getRow()][cell.getColActual()].setText("<html><font color = 'red'>X</font></html>");
-            Battleship.playerShips.addHitCell(cell);
+            Battleship.playerShips.addHitPlayerCell(cell);
             Battleship.console.log("<GAME>Enemy hit cell " + cell.getValue());
 
         }
         //creates new white O JLabel to replace previous.
         else {
+            System.out.println("Updating game board: miss");
             playerFieldSpaces[cell.getRow()][cell.getColActual()].setText("<html><font color = 'blue'>O</font></html>");
             Battleship.console.log("<GAME>Enemy missed cell " + cell.getValue());
         }
@@ -81,9 +77,11 @@ public class Gameboard {
 
     //If a hit is scored, the enemy's field is updated with a red X. Blue O is placed if it's a miss.
     public void updateEnemyField(Cell cell, boolean hit) {
-        if(hit && !Battleship.enemyShips.checkHitCell(cell)) {
+
+        if(hit) {
+            
             enemyFieldSpaces[cell.getRow()][cell.getColActual()].setText("<html><font color = 'red'>X</font></html>");
-            Battleship.enemyShips.addHitCell(cell);
+            Battleship.enemyShips.addHitEnemyCell(cell);
             Battleship.console.log("<GAME>You hit cell " + cell.getValue());
         }
         else {
@@ -121,8 +119,12 @@ public class Gameboard {
 
     }
 
+    //Labels boards with dashes and Row / Column lettering.
     private void labelBoards() {
 
+        playerBoard.removeAll();
+        enemyBoard.removeAll();
+        
         //Iterates through two 11 by 12 grids, labeling the rows and columns and placing a '-' character in each blank space
         char rowLabels = 'A';
         for(int i = 0; i < 11; ++i) {
@@ -163,4 +165,23 @@ public class Gameboard {
         }
     }
 
+    private void addLabels() {
+
+
+        //Provides proper formatting for components
+        boardPanelConstraints = new GridBagConstraints();
+        boardPanelConstraints.insets = insets;
+        boardPanelConstraints.gridx = 0;
+        boardPanelConstraints.gridy = 0;
+        boardPanel.add(enemyLabel, boardPanelConstraints);
+
+        boardPanelConstraints.gridy = 1;
+        boardPanel.add(enemyBoard, boardPanelConstraints);
+
+        boardPanelConstraints.gridy = 2;
+        boardPanel.add(playerLabel, boardPanelConstraints);
+
+        boardPanelConstraints.gridy = 3;
+        boardPanel.add(playerBoard, boardPanelConstraints);
+    }
 }
