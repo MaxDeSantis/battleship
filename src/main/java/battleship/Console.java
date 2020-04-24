@@ -11,6 +11,7 @@ public class Console {
     private JScrollPane console;
     private JTextField messageBox;
     private JScrollBar verticalBar;
+    private JButton returnToMain;
 
     public Console() {
 
@@ -43,6 +44,15 @@ public class Console {
             }
         });
 
+        //Mainmenu button
+        returnToMain = new JButton("Return to main menu");
+        returnToMain.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Battleship.network.transmitInformation("RETURN");
+                Battleship.returnToMainMenu();
+            }
+        });
+
         
         //Needed for formatting
         consolePanel.setLayout(new GridBagLayout());
@@ -51,16 +61,20 @@ public class Console {
         console = new JScrollPane(consoleTextBox);
         verticalBar = console.getVerticalScrollBar();
         
-
-        //Text history formatting
+        //Mainmenu button
         constraints.weightx = 0.5;
         constraints.weighty = 1;
+        consolePanel.add(returnToMain, constraints);
+
+        //Text history formatting
+        constraints.gridy = 1;
         consolePanel.add(console, constraints);
 
         //Messagebox formatting
-        constraints.weighty = 1;
-        constraints.gridy = 1;
+        constraints.gridy = 2;
         consolePanel.add(messageBox, constraints);
+
+        returnToMain.setVisible(false);
     }
     
     public void log(String message) {
@@ -75,5 +89,9 @@ public class Console {
 
     public JPanel getPanel() {
         return consolePanel;
+    }
+
+    public void setReturnButtonVisible(boolean value) {
+        returnToMain.setVisible(value);
     }
 }

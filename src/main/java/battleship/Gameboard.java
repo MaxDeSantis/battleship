@@ -89,6 +89,10 @@ public class Gameboard {
             Battleship.console.log("<GAME>You missed cell " + cell.getValue());
         }
     }
+    
+    public void updateRemainingShips(Cell cell) {
+        enemyFieldSpaces[cell.getRow()][cell.getColActual()].setText("<html><font color = 'green'>&#x25A0;</font></html>");
+    }
 
     //Creates and places labels in the "playerField" array of JLabels to represent ship tiles.
     public void drawShip(Ship ship) {

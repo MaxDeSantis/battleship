@@ -65,6 +65,31 @@ public class Shiplog {
 
     }
 
+    public void transmitRemainingCells() {
+        for(int i = 0; i < 5; ++i) {
+            if(!carrier[i].isCellHit()) {
+                Battleship.network.transmitCell(carrier[i]);
+            }
+        }
+        for(int i = 0; i < 4; ++i) {
+            if(!battleship[i].isCellHit())
+                Battleship.network.transmitCell(battleship[i]);
+        }
+        for(int i = 0; i < 3; ++i) {
+            if(!submarine[i].isCellHit())
+            Battleship.network.transmitCell(submarine[i]);
+
+            if(!cruiser[i].isCellHit())
+                Battleship.network.transmitCell(cruiser[i]);
+            
+        }
+        for(int i = 0; i < 2; ++i) {
+            if(!destroyer[i].isCellHit())
+                Battleship.network.transmitCell(destroyer[i]);
+        }
+    }
+
+    //Clears hit cells array
     public void clearHitCells() {
 
             for(int i = 0; i < 17; ++i) {
