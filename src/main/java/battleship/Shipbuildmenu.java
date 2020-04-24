@@ -29,7 +29,7 @@ public class Shipbuildmenu {
     public Shipbuildmenu() {
         buildMenu = new JPanel();
         buildMenu.setLayout(new GridLayout(0, 1, 0, 20));
-        instructionsLabel = new JLabel("<html>You are placing your ships.<br>(1)Enter the cell of the front of the ship e.g. A3, C5<br>(2)Choose orientation of the ship.<br>(3)Confirm ship placement.</html>");
+        instructionsLabel = new JLabel("<html><font color = 'blue'>THE GAME HAS BEGUN</font><br>You are placing your ships.<br>(1)Enter the cell of the front of the ship e.g. A3, C5<br>(2)Choose orientation of the ship.<br>(3)Confirm ship placement.</html>");
         currentShip = new JLabel("Placing ship: Carrier, length 5");
         shipFrontLocation = new JTextField("", 3);
         orientation = new JButton("Horizontal");

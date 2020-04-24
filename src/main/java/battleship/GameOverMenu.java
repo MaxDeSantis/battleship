@@ -38,6 +38,7 @@ public class GameOverMenu {
         //Players returned to menu.
         returnButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                Battleship.network.transmitInformation("RETURN");
                 Battleship.returnToMainMenu();
             }
         });
@@ -58,14 +59,12 @@ public class GameOverMenu {
         
     }
 
+    public void setVisible(boolean value) {
+        gameOverPanel.setVisible(value);
+    }
+
     public void gameOver(boolean value) {
-        if(value) {
-            gameOverPanel.setVisible(true);
-        }
-        else {
-            gameOverPanel.setVisible(false);
-        }
-        
+        gameOverPanel.setVisible(value);
     }
 
 

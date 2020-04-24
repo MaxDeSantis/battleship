@@ -107,48 +107,59 @@ public class Battleship {
 
     public static void wonGame() {
         console.log("You win!");
+        gameOver = true;
+        playerShips.transmitRemainingCells();
         gameOverMenu.setWinLabel(true);
-        gameMenu.gameOver(true);
-        gameOverMenu.gameOver(true);
+        gameMenu.setVisible(false);
+        gameOverMenu.setVisible(true);
     }
 
     public static void lostGame() {
         console.log("You lost!");
+        gameOver = true;
         gameOverMenu.setWinLabel(false);
-        gameMenu.gameOver(true);
-        gameOverMenu.gameOver(true);
+        gameMenu.setVisible(false);
+        gameOverMenu.setVisible(true);
     }
 
     public static void reset() {
+        gameOver = false;
+
         mainBoard.clear();
         playerShips.clear();
         enemyShips.clearHitCells();
         buildMenu.clear();
         gameMenu.gameOver(false);
-        gameOverMenu.gameOver(false);
+        gameOverMenu.setVisible(false);
         console.clear();
         console.log("Game restarted!");
         shipSelect();
     }
 
     public static void returnToMainMenu() {
-        playerShips.clear();
-        enemyShips.clear();
-        buildMenu.clear();
-        gameMenu.gameOver(false);
-        gameOverMenu.gameOver(false);
+        network.closeConnections();
 
+        gameOverMenu.gameOver(false);
+        gameOver = false;
         mainMenu.joinButton.setEnabled(true);
+        console.setReturnButtonVisible(false);
         gameMenu.setVisible(false);
         networkMenu.setVisible(false);
         buildMenu.setVisible(false);
         mainMenu.setVisible(true);
+
+        mainBoard.clear();
+        playerShips.clear();
+        enemyShips.clearHitCells();
+        buildMenu.clear();
+        
     }
 
     public static void shipSelect() {
         mainMenu.setVisible(false);
         gameMenu.setVisible(false);
         networkMenu.setVisible(false);
+        console.setReturnButtonVisible(true);
         buildMenu.setVisible(true);
     }
 

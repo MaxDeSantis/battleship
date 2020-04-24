@@ -49,6 +49,7 @@ public class Gamemenu {
                         else {
                             Battleship.console.log("You've already hit that cell.");
                         }
+                        
                    }
                    catch(Exception except) {
                        Battleship.console.log(except.getMessage());
@@ -143,6 +144,6 @@ public class Gamemenu {
 
     //Formats GUI for end of game options.
     public void gameOver(boolean displayButtons) {
-        gameMenu.setVisible(false);
+        gameMenu.setVisible(displayButtons);
     }
 }

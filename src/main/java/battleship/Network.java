@@ -80,6 +80,8 @@ public class Network {
                     Battleship.myTurn = true;
                     Battleship.gameMenu.updateTurnLabel();
                     Battleship.mainMenu.hostButton.setEnabled(true);
+                    Battleship.console.log("Player connected");
+
                     //Start chat and data threads.
                     chatStart();
                     cellTransmissionStart();
@@ -213,29 +215,35 @@ public class Network {
             if(inputData instanceof Cell) {
                 transmitCell = (Cell) inputData;
 
-                //Self explanatory - updates turn label each round
-                outcomeCell = transmitCell;
-                Battleship.myTurn = true;
-                Battleship.gameMenu.updateTurnLabel();
+                if(!Battleship.gameOver) {
+                    //Self explanatory - updates turn label each round
+                    outcomeCell = transmitCell;
+                    Battleship.myTurn = true;
+                    Battleship.gameMenu.updateTurnLabel();
 
-                //Check if it's a hit or miss. Result sent back to other player.
-                if(Battleship.playerShips.checkLog(transmitCell)) {
+                    //Check if it's a hit or miss. Result sent back to other player.
+                    if(Battleship.playerShips.checkLog(transmitCell)) {
 
-                    System.out.println("Other player hit cell: " + transmitCell.getValue());
-                    Battleship.mainBoard.updatePlayerField(transmitCell, true);
-                    outToOtherPlayer.writeObject(new String("HIT"));
+                        System.out.println("Other player hit cell: " + transmitCell.getValue());
+                        Battleship.mainBoard.updatePlayerField(transmitCell, true);
+                        outToOtherPlayer.writeObject(new String("HIT"));
 
-                    if(Battleship.playerShips.shipStatus()) {
-                        Battleship.network.transmitInformation("OVER");
-                        Battleship.lostGame();
+                        if(Battleship.playerShips.shipStatus()) {
+                            Battleship.network.transmitInformation("OVER");
+                            Battleship.lostGame();
+                        }
+                        
                     }
-                    
+                    else {
+                        System.out.println("Other player missed cell: " + transmitCell.getValue());
+                        Battleship.mainBoard.updatePlayerField(transmitCell, false);
+                        outToOtherPlayer.writeObject(new String("MISS"));
+                    }
                 }
                 else {
-                    System.out.println("Other player missed cell: " + transmitCell.getValue());
-                    Battleship.mainBoard.updatePlayerField(transmitCell, false);
-                    outToOtherPlayer.writeObject(new String("MISS"));
+                    Battleship.mainBoard.updateRemainingShips(transmitCell);
                 }
+                
                 
             }
             
@@ -251,6 +259,28 @@ public class Network {
                 //You missed on the enemy.
                 else if(information.equals("MISS")) {
                     Battleship.mainBoard.updateEnemyField(outcomeCell, false);
+                }
+
+                //Logs when a ship is destroyed by you.
+                else if(information.substring(0, 4).equals("DEST")) {
+                    int index = information.charAt(4) - '0';
+
+                    if(index == 1) {
+                        Battleship.gameMenu.destroy("carrier");
+                    }
+                    else if(index == 2) {
+                        Battleship.gameMenu.destroy("battleship");
+                    }
+                    else if(index == 3) {
+                        Battleship.gameMenu.destroy("submarine");
+                    }
+                    else if(index == 4) {
+                        Battleship.gameMenu.destroy("cruiser");
+                    }
+                    
+                    else if(index == 5) {
+                        Battleship.gameMenu.destroy("destroyer");
+                    }
                 }
 
                 //The enemy exited the game.
@@ -281,27 +311,12 @@ public class Network {
                     Battleship.reset();
                 }
 
-                else if(information.substring(0, 4).equals("DEST")) {
-                    int index = information.charAt(4) - '0';
-
-                    if(index == 1) {
-                        Battleship.gameMenu.destroy("carrier");
-                    }
-                    else if(index == 2) {
-                        Battleship.gameMenu.destroy("battleship");
-                    }
-                    else if(index == 3) {
-                        Battleship.gameMenu.destroy("submarine");
-                    }
-                    else if(index == 4) {
-                        Battleship.gameMenu.destroy("cruiser");
-                    }
-                    
-                    else if(index == 5) {
-                        Battleship.gameMenu.destroy("destroyer");
-                    }
+                //Other player returned to menu; close connection and return yourself.
+                else if(information.equals("RETURN")) {
+                    playerExited();
+                    Battleship.console.log("Other player exited game");
+                    Battleship.returnToMainMenu();
                 }
-
                 //Error handling
                 else {
                     System.out.println("String unidentifiable in readCellTransmission");
