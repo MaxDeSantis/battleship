@@ -55,6 +55,7 @@
             <archive>
               <manifest>
                 <mainClass>battleship.Battleship</mainClass>
+                <version>1.1</version>
               </manifest>
             </archive>
           </configuration>
