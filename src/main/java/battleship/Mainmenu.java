@@ -73,6 +73,4 @@ public class Mainmenu {
         
         System.exit(0);
     }
-
-
 }

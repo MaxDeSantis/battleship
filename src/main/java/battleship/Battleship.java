@@ -109,6 +109,7 @@ public class Battleship {
         console.log("You win!");
         gameOver = true;
         playerShips.transmitRemainingCells();
+        console.setReturnButtonVisible(false);
         gameOverMenu.setWinLabel(true);
         gameMenu.setVisible(false);
         gameOverMenu.setVisible(true);
@@ -117,6 +118,7 @@ public class Battleship {
     public static void lostGame() {
         console.log("You lost!");
         gameOver = true;
+        console.setReturnButtonVisible(false);
         gameOverMenu.setWinLabel(false);
         gameMenu.setVisible(false);
         gameOverMenu.setVisible(true);
@@ -125,12 +127,13 @@ public class Battleship {
     public static void reset() {
         gameOver = false;
 
-        mainBoard.clear();
         playerShips.clear();
         enemyShips.clearHitCells();
         buildMenu.clear();
         gameMenu.gameOver(false);
         gameOverMenu.setVisible(false);
+        console.setReturnButtonVisible(true);
+        mainBoard.clear();
         console.clear();
         console.log("Game restarted!");
         shipSelect();

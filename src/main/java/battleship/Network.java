@@ -104,15 +104,17 @@ public class Network {
     }
 
     //Searches for and joins the server hosted on port 4999. Initiates data streams in the same way as the host.
-    public void joinGame() throws IOException{
+    public void joinGame() {
         joinGameThread = new Thread() {
             public void run() {
                 try {
-                    //Setup sockets
-                    socket = new Socket(otherPlayerIP, 4999);
-                    dataSocket = new Socket(otherPlayerIP, 5000);
+                    //Setup sockets. Times out after a second of failure.
+                    socket = new Socket();
+                    socket.connect(new InetSocketAddress(otherPlayerIP, 4999), 1000);
+                    dataSocket = new Socket();
+                    dataSocket.connect(new InetSocketAddress(otherPlayerIP, 5000), 1000);
                     System.out.println("Joined successfully");
-
+                    Battleship.networkMenu.clearTextField();
                     //Enabled logic
                     host = false;
                     connection = true;
@@ -139,9 +141,13 @@ public class Network {
                     //Debugging
                     System.out.println("I am not the host");
                 }
+                catch(SocketTimeoutException except) {
+                    Battleship.networkMenu.cancelJoin();
+                }
                 catch(IOException except) {
                     except.printStackTrace();
                 }
+                
                 
             }
         };

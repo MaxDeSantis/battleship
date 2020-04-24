@@ -5,7 +5,6 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import java.awt.event.*;
-import java.io.IOException;
 import java.awt.GridLayout;
 
 public class NetworkMenu {
@@ -31,14 +30,8 @@ public class NetworkMenu {
             public void actionPerformed(ActionEvent e) {
                 ip = ipTextField.getText();
                 Battleship.network.setIP(ip);
-                try {
                     Battleship.console.log("Attempting to join game...");
                     Battleship.network.joinGame();
-                    ipTextField.setText("");
-                }
-                catch(IOException except) {
-                    Battleship.console.log("Failed to join game, please try again");
-                }
             }          
         });
 
@@ -49,11 +42,19 @@ public class NetworkMenu {
 
     }
 
+    public void cancelJoin() {
+        Battleship.console.log("<ERROR>IP unreachable.");
+    }
+
     public void setVisible(boolean value) {
         networkPanel.setVisible(value);
     }
 
     public JPanel getPanel() {
         return networkPanel;
+    }
+
+    public void clearTextField() {
+        ipTextField.setText("");
     }
 }
