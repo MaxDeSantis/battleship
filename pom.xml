@@ -6,7 +6,7 @@
 
   <groupId>com.maxdesantis.battleship</groupId>
   <artifactId>battleship</artifactId>
-  <version>1.0</version>
+  <version>1.3</version>
 
   <name>battleship</name>
   <!-- FIXME change it to the project's website -->
@@ -55,7 +55,6 @@
             <archive>
               <manifest>
                 <mainClass>battleship.Battleship</mainClass>
-                <version>1.1</version>
               </manifest>
             </archive>
           </configuration>

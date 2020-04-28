@@ -63,6 +63,12 @@ public class Shiplog {
             destroyer[i] = new Cell();
         }
 
+        carrierDestroyed = false;
+        battleshipDestroyed = false;
+        submarineDestroyed = false;
+        cruiserDestroyed = false;
+        destroyerDestroyed = false;
+
     }
 
     public void transmitRemainingCells() {

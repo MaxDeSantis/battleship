@@ -114,6 +114,12 @@ public class Gamemenu {
         fireButton.setEnabled(true);
     }
 
+    public void setUnReady() {
+        readyLabel.setVisible(true);
+        titleLabel.setVisible(false);
+        fireButton.setEnabled(false);
+    }
+
     public void setLabel(String label) {
         titleLabel.setText(label);
     }
@@ -140,6 +146,15 @@ public class Gamemenu {
             Battleship.console.log("Enemy destroyer destroyed");
             destroyer.setText("<html><font color = 'red'><s>Destroyer</s></font></html>");
         }
+    }
+
+    public void resetShipLabels() {
+        enemyShips.setText("Enemy Ships Remaining:");
+        carrier.setText("<html><font color = 'green'>Carrier</font></html>");
+        battleship.setText("<html><font color = 'green'>Battleship</font></html>");
+        submarine.setText("<html><font color = 'green'>Submarine</font></html>");
+        cruiser.setText("<html><font color = 'green'>Cruiser</font></html>");
+        destroyer.setText("<html><font color = 'green'>Destroyer</font></html>");
     }
 
     //Formats GUI for end of game options.

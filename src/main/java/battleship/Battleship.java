@@ -9,17 +9,6 @@ import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 import java.awt.*;
 
-/* 
-To-Dos as of 4/9/20:
-Put "exit" button on every page. Maybe include with gameboard rather than mainmenu?
-Implement "return to main menu" button.
-Improve "your turn" notification.
-Add other player is ready button.
-Reveal ships after ending?
-Make list of ships that strike through as they're sinked.
-*/
-
-
 public class Battleship {
     //Main functionality classes
     public static Battleship battleship;
@@ -126,35 +115,49 @@ public class Battleship {
 
     public static void reset() {
         gameOver = false;
+        gameMenu.gameOver(false);
+        gameMenu.resetShipLabels();
+        gameMenu.setUnReady();
+        gameOverMenu.setVisible(false);
+
+        mainBoard.clear();
+        buildMenu.clear();
 
         playerShips.clear();
         enemyShips.clearHitCells();
-        buildMenu.clear();
-        gameMenu.gameOver(false);
-        gameOverMenu.setVisible(false);
+        
+        network.theyWantRepeat = false;
+        
         console.setReturnButtonVisible(true);
-        mainBoard.clear();
         console.clear();
         console.log("Game restarted!");
+
         shipSelect();
     }
 
     public static void returnToMainMenu() {
         network.closeConnections();
+        network.theyWantRepeat = false;
+        networkMenu.setVisible(false);
 
+        mainMenu.joinButton.setEnabled(true);
+        mainMenu.setVisible(true);
+        mainBoard.clear();
+        
+        console.setReturnButtonVisible(false);
+
+        gameMenu.setVisible(false);
+        gameMenu.resetShipLabels();
+        gameMenu.setUnReady();
         gameOverMenu.gameOver(false);
         gameOver = false;
-        mainMenu.joinButton.setEnabled(true);
-        console.setReturnButtonVisible(false);
-        gameMenu.setVisible(false);
-        networkMenu.setVisible(false);
-        buildMenu.setVisible(false);
-        mainMenu.setVisible(true);
 
-        mainBoard.clear();
+        buildMenu.setVisible(false);
+        buildMenu.clear();
+        
         playerShips.clear();
         enemyShips.clearHitCells();
-        buildMenu.clear();
+        
         
     }
 
